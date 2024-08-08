@@ -20,55 +20,108 @@
 
 // }
 
-type BallCoords = 
-{  ycoord: number;
+export type BallCoords = {
+  ycoord: number;
   xcoord: number;
   xvelocity: number;
-  yvelocity: number;}
+  yvelocity: number;
+};
 
-type Coords = {
+export type Coords = {
   player1: number;
   player2: number;
-  ball: BallCoords
-  
+  ball: BallCoords;
 };
-type Score = { player1: number; player2: number };
+export type Score = { player1: number; player2: number };
 
-type Game = { coords: Coords; score: Score };
+export type Game = { coords: Coords; score: Score; started: boolean };
 
-type BoxCoords = {
-  xllcoord: number;
-  yllcoord: number;
-  xtrcoord: number;
-  ytrcoord: number;
+export type BoxCoords = {
+  xlcoord: number;
+  ytcoord: number;
+  xrcoord: number;
+  ybcoord: number;
 };
 
 const STEP_SIZE = 1;
 
-function movePaddle(
+export function getInitialState() {
+  return {
+    coords: {
+      player1: 200,
+      player2: 200,
+      ball: {
+        ycoord: -1,
+        xcoord: -1,
+        xvelocity: -1,
+        yvelocity: -1,
+      },
+    },
+    score: { player1: 0, player2: 0 },
+    started: false,
+  };
+}
+
+export function movePaddle(
   state: Game,
-  paddle: number,
+  paddle: "l" | "r",
   direction: "up" | "down" | "none"
 ) {
   const newState = structuredClone(state);
   if (direction !== "none") {
-    newState.coords.player1 += direction === "up" ? STEP_SIZE : -STEP_SIZE;
+    if (paddle === "l") {
+      newState.coords.player1 += direction === "up" ? STEP_SIZE : -STEP_SIZE;
+    }
+    if (paddle === "r") {
+      newState.coords.player2 += direction === "up" ? STEP_SIZE : -STEP_SIZE;
+    }
   }
   return newState;
 }
+export type CollisionPosition = Set<
+  "t" | "r" | "b" | "l" | "tl" | "tr" | "br" | "bl"
+>;
+export type CollisionConditions = {
+  position: CollisionPosition;
+}; //possibly include velocity
 
-function collisionComputer(box:BoxCoords,ball:BallCoords){
-
+function checkCollision(
+  ball: BoxCoords,
+  other: BoxCoords,
+  location: "t" | "r" | "b" | "l" | "tl" | "tr" | "br" | "bl"
+) {
+  switch (location) {
+    case "t":
+      if (ball.ytcoord > other.ybcoord) {
+      }
+  }
 }
+
+// function checkCollisions(
+//   ball: BoxCoords,
+//   other: BoxCoords,
+//   conditions: CollisionConditions
+// ) {
+//   conditions.position.forEach(() => {
+//     if checkCollision()
+//   });
+// }
+
+function identifyCollider(screencoords: BoxCoords) {}
 
 function updateBallVelocity(
   state: Game,
-  lboxcoords: BoxCoords,
-  rboxcoords: BoxCoords
+  screencords: {
+    lboxcoords: BoxCoords;
+    rboxcoords: BoxCoords;
+    ballcoords: BoxCoords;
+    topwallcoords: BoxCoords;
+    bottomwallcoords: BoxCoords;
+  }
 ) {
-  const newVelocity = 
+  // const newVelocity =
 }
 
 function checkWin() {}
 
-export default Game;
+// export default Game;
