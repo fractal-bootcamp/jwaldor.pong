@@ -3,18 +3,6 @@ import "./App.css";
 import Start from "./routes/Start";
 import Stadium from "./routes/Stadium";
 
-function KeyPress() {
-  const keyPress = (event: React.KeyboardEvent) => {
-    console.log(event.key);
-  };
-  return (
-    <div className="App">
-      <h1>GeeksforGeeks</h1>
-      <input type="text" onKeyPress={keyPress} placeholder="Press here..." />
-    </div>
-  );
-}
-
 function App() {
   const [mode, setMode] = useState("");
 
@@ -29,7 +17,6 @@ function App() {
       <div className="text-gray-200">Hello</div>
       {/* <Start handleMode={handleMode} /> */}
       <Stadium />
-      <KeyPress />
     </>
   );
 }
