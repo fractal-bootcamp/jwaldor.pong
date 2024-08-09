@@ -43,7 +43,8 @@ export type BoxCoords = {
   ybcoord: number;
 };
 
-const STEP_SIZE = 1;
+const STEP_SIZE = 10;
+export const SPEED = 200;
 
 export function getInitialState() {
   return {
@@ -62,10 +63,28 @@ export function getInitialState() {
   };
 }
 
+type Orientation = "up" | "down" | "none";
+
+export function getNextState(
+  state: Game,
+  orientationLeft: Orientation,
+  orientationRight: Orientation
+): Game {
+  // console.log(state, orientationLeft, orientationRight);
+  // move right paddle
+  // move the left paddle
+  // move the ball
+  // check if win
+  const state1 = movePaddle(state, "l", orientationLeft);
+  const state2 = movePaddle(state1, "r", orientationRight);
+
+  return state2;
+}
+
 export function movePaddle(
   state: Game,
   paddle: "l" | "r",
-  direction: "up" | "down" | "none"
+  direction: Orientation
 ) {
   const newState = structuredClone(state);
   if (direction !== "none") {
