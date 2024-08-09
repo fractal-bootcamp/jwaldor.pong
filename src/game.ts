@@ -42,7 +42,7 @@ export type BoxCoords = {
 };
 
 const STEP_SIZE = 5;
-export const SPEED = 60;
+export const SPEED = 30;
 
 export const PADDLE_WIDTH = 8;
 export const PADDLE_HEIGHT = 45;
@@ -61,8 +61,8 @@ export function getInitialState() {
       ball: {
         ycoord: 200,
         xcoord: 350,
-        xvelocity: 1,
-        yvelocity: 1,
+        xvelocity: 3,
+        yvelocity: 3,
       },
     },
     score: { player1: 0, player2: 0 },
@@ -162,7 +162,8 @@ function checkCollision(ballcoords: FullCoords, paddleCoords: FullCoords) {
 function paddleCollision(
   ballcoords: FullCoords,
   paddleCoords: FullCoords,
-  gameState: Game
+  gameState: Game,
+  whichpaddle: "left" | "right"
 ) {
   const ballx = gameState.coords.ball.xvelocity;
   const bally = gameState.coords.ball.yvelocity;
@@ -172,16 +173,23 @@ function paddleCollision(
       ballcoords.by -
       (paddleCoords.ty + paddleCoords.by) / 2) /
     paddleheight;
-  const newAngle = Math.atan((-bally / ballx) * ballcenter);
+  const newAngle = Math.atan(-bally / ballx + ballcenter);
   gameState.coords.ball.xvelocity = -Math.cos(newAngle) * ballx;
   gameState.coords.ball.yvelocity = Math.sin(newAngle) * bally;
+  console.log("xcoord", gameState.coords.ball.xcoord, paddleCoords.lx);
+  if (whichpaddle === "left") {
+    gameState.coords.ball.xcoord = paddleCoords.rx + BALL_SIZE;
+  } else if (whichpaddle === "right") {
+    gameState.coords.ball.xcoord = paddleCoords.lx - BALL_SIZE;
+  }
   console.log(gameState.coords.ball.xvelocity, gameState.coords.ball.yvelocity);
   return gameState;
 }
 
 function updateBallVelocity(state: Game) {
   const page_width = document.getElementById("background")?.clientWidth;
-  if (page_width) {
+  const page_height = document.getElementById("background")?.clientHeight;
+  if (page_width && page_height) {
     const leftpad = {
       lx: PADDLE_LEFT,
       rx: PADDLE_LEFT + PADDLE_WIDTH,
@@ -202,19 +210,34 @@ function updateBallVelocity(state: Game) {
       ty: state.coords.ball.ycoord + BALL_SIZE,
       by: state.coords.ball.ycoord,
     };
+    console.log(ball.by);
+    const bottomwall = page_height;
+    const topwall = document
+      .getElementById("topwall")
+      ?.getBoundingClientRect().bottom;
+    console.log("walls", bottomwall, topwall, page_height - 40);
     // console.log(leftpad, rightpad, ball);
     if (checkCollision(ball, rightpad)) {
       console.log("collision detected");
-      return paddleCollision(ball, rightpad, state);
+      return paddleCollision(ball, rightpad, state, "right");
     } else if (checkCollision(ball, leftpad)) {
       console.log("collision detected");
-      return paddleCollision(ball, leftpad, state);
+      return paddleCollision(ball, leftpad, state, "left");
+    }
+    if (ball.ty > page_height - 40) {
+      console.log(ball.ty, topwall, "hitting bototm");
+      state.coords.ball.yvelocity = -state.coords.ball.yvelocity;
+      return state;
+    } else if (ball.by < 40) {
+      console.log("hitting top");
+      state.coords.ball.yvelocity = -state.coords.ball.yvelocity;
+      return state;
     } else {
       return state;
     }
   } else {
+    console.log("error with document");
     return state;
-    console.log("page width null");
   }
 
   // document.getElementById("background")?.clientWidth;

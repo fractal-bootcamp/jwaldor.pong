@@ -103,14 +103,16 @@ function Stadium() {
   //min-w-2 min-h-10
 
   // console.log("width", document.getElementById("background")?.clientWidth);
-
   return (
     <>
       <div
         id="background"
-        className="flex flex-col relative w-[80%] max-w-md min-h-screen bg-sky-950 h-30"
+        className="flex flex-col relative w-[80%] max-w-md min-h-screen bg-sky-950 h-30 justify-between"
       >
-        <div className=" bg-cyan-800 rounded-b-lg w-full h-10"></div>
+        <div
+          id="topwall"
+          className=" bg-cyan-800 rounded-b-lg w-full h-[40px]"
+        ></div>
         <div className="text-blue-100">{gameState.score.player1}</div>
         <div className="text-blue-100">{gameState.score.player2}</div>
         <div
@@ -146,13 +148,8 @@ function Stadium() {
           className={`absolute bg-white`}
         ></div>
         <div
-          style={{
-            bottom: "0px",
-            left: "0px",
-            width: "460px",
-            height: "20px",
-          }}
-          className="absolute bg-cyan-800 rounded-t-lg"
+          id="bottomwall"
+          className=" bg-cyan-800 rounded-b-lg w-full h-[40px]"
         ></div>
       </div>
     </>
