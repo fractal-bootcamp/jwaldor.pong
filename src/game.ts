@@ -34,15 +34,20 @@ export type Coords = {
 };
 export type Score = { player1: number; player2: number };
 
-export type Game = { coords: Coords; score: Score; started: boolean };
+export type Game = {
+  coords: Coords;
+  score: Score;
+  started: boolean;
+  AI: boolean;
+};
 
 export type BoxCoords = {
   xlcoord: number;
   ybcoord: number;
 };
 
-const STEP_SIZE = 5;
-export const SPEED = 30;
+const STEP_SIZE = 2;
+export const SPEED = 10;
 
 export const PADDLE_WIDTH = 8;
 export const PADDLE_HEIGHT = 45;
@@ -61,12 +66,13 @@ export function getInitialState() {
       ball: {
         ycoord: 200,
         xcoord: 350,
-        xvelocity: 3,
-        yvelocity: 3,
+        xvelocity: 1,
+        yvelocity: 1,
       },
     },
     score: { player1: 0, player2: 0 },
     started: false,
+    AI: false,
   };
 }
 
@@ -79,7 +85,8 @@ let ballCallCount = 0;
 export function getNextState(
   state: Game,
   orientationLeft: Orientation,
-  orientationRight: Orientation
+  orientationRight: Orientation,
+  mode: "AI" | "human"
 ): Game {
   // console.log(state, orientationLeft, orientationRight);
   // move right paddle
@@ -89,13 +96,73 @@ export function getNextState(
   callCount += 1;
   // console.log("callCounts", callCount, paddlecallCount, ballCallCount);
   const newState = structuredClone(state);
-  const state1 = movePaddle(state, "l", orientationLeft);
+  const state1 =
+    mode === "AI"
+      ? movePaddle(newState, "l", aiMove(newState))
+      : movePaddle(newState, "l", orientationLeft);
   const state2 = movePaddle(state1, "r", orientationRight);
   // console.log(orientationRight);
   const state3 = moveBall(state2);
   const state4 = updateBallVelocity(state3);
   const state5 = checkWin(state4);
   return state5;
+}
+
+function computeHitPosition(gameState: Game) {
+  const page_height = document.getElementById("background")?.clientHeight;
+  if (page_height && gameState.coords.ball.xvelocity < 0) {
+    console.log("computeHitPosition");
+    const bottomDist = gameState.coords.ball.ycoord - 40;
+    const topDist = page_height - gameState.coords.ball.ycoord - 40;
+    let xdist = gameState.coords.ball.xcoord;
+    let ydist = gameState.coords.ball.ycoord;
+    const MAX_ITER = 20;
+    let iter = 0;
+    while (xdist > 10 && iter < MAX_ITER) {
+      const relDist =
+        gameState.coords.ball.yvelocity > 0 ? topDist : bottomDist;
+      const possNext =
+        xdist -
+        Math.abs(
+          (relDist / gameState.coords.ball.yvelocity) *
+            gameState.coords.ball.xvelocity
+        );
+      if (possNext > 0) {
+        xdist -= possNext;
+        ydist = gameState.coords.ball.yvelocity > 0 ? page_height - 40 : 40;
+      } else {
+        const timeremaining = Math.abs(
+          (xdist - 10) / gameState.coords.ball.xvelocity
+        );
+        ydist += timeremaining * gameState.coords.ball.yvelocity;
+        return ydist - 40;
+      }
+      iter += 1;
+    }
+    console.error("ended while loop");
+  } else {
+    console.log("ball moving other direction");
+    return;
+  }
+}
+
+function aiMove(gameState: Game) {
+  console.log("AI move");
+  const targetPos = computeHitPosition(gameState);
+
+  console.log("targetPos", targetPos);
+  if (targetPos) {
+    const moveDirection = gameState.coords.player1 < targetPos ? "up" : "down";
+    console.log(
+      targetPos,
+      gameState.coords.player1,
+      targetPos < gameState.coords.player1
+    );
+    return moveDirection;
+  } else {
+    console.error("difficulty calculating AI Position");
+  }
+  return "none";
 }
 
 export function movePaddle(
@@ -173,9 +240,25 @@ function paddleCollision(
       ballcoords.by -
       (paddleCoords.ty + paddleCoords.by) / 2) /
     paddleheight;
-  const newAngle = Math.atan(-bally / ballx + ballcenter);
-  gameState.coords.ball.xvelocity = -Math.cos(newAngle) * ballx;
-  gameState.coords.ball.yvelocity = Math.sin(newAngle) * bally;
+  console.log("paddleheight", ballcenter);
+  //set y-velocity depending on the ballcenter
+  const velocity_mag = Math.sqrt(ballx * ballx + bally * bally);
+  const ycomponentmag = Math.abs(gameState.coords.ball.yvelocity);
+  const newysign = ycomponentmag / gameState.coords.ball.yvelocity;
+  gameState.coords.ball.yvelocity =
+    (ycomponentmag + (velocity_mag - ycomponentmag) * Math.abs(ballcenter)) *
+    newysign;
+  gameState.coords.ball.xvelocity =
+    (-1 *
+      (Math.sqrt(velocity_mag ** 2 - gameState.coords.ball.yvelocity ** 2) *
+        Math.abs(gameState.coords.ball.xvelocity))) /
+    gameState.coords.ball.xvelocity;
+  //then set x-velocity so that magnitude stays the same
+
+  //factor in x-velocity?
+  // const newAngle = Math.atan(-bally / ballx + ballcenter);
+  // gameState.coords.ball.xvelocity = -Math.cos(newAngle) * ballx;
+  // gameState.coords.ball.yvelocity = Math.sin(newAngle) * bally;
   console.log("xcoord", gameState.coords.ball.xcoord, paddleCoords.lx);
   if (whichpaddle === "left") {
     gameState.coords.ball.xcoord = paddleCoords.rx + BALL_SIZE;
@@ -210,12 +293,7 @@ function updateBallVelocity(state: Game) {
       ty: state.coords.ball.ycoord + BALL_SIZE,
       by: state.coords.ball.ycoord,
     };
-    console.log(ball.by);
-    const bottomwall = page_height;
-    const topwall = document
-      .getElementById("topwall")
-      ?.getBoundingClientRect().bottom;
-    console.log("walls", bottomwall, topwall, page_height - 40);
+    // console.log("walls", bottomwall, topwall, page_height - 40);
     // console.log(leftpad, rightpad, ball);
     if (checkCollision(ball, rightpad)) {
       console.log("collision detected");
@@ -225,7 +303,6 @@ function updateBallVelocity(state: Game) {
       return paddleCollision(ball, leftpad, state, "left");
     }
     if (ball.ty > page_height - 40) {
-      console.log(ball.ty, topwall, "hitting bototm");
       state.coords.ball.yvelocity = -state.coords.ball.yvelocity;
       return state;
     } else if (ball.by < 40) {
