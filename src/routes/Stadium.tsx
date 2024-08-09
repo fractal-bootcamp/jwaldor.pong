@@ -31,6 +31,8 @@ import {
 
 type Orientation = "up" | "down" | "none";
 
+type AIType = "human" | "AI";
+
 const useSetInterval = (cb: Function, time: number) => {
   const cbRef = useRef<Function>(() => {});
   useEffect(() => {
@@ -46,13 +48,19 @@ function Stadium() {
   const [gameState, setGameState] = useState<Game>(getInitialState());
   const [orientationLeft, setOrientationLeft] = useState<Orientation>("none");
   const [orientationRight, setOrientationRight] = useState<Orientation>("none");
+  const [mode, setMode] = useState<AIType>("human");
   const position2 = gameState.coords.player2;
 
   useSetInterval(
     () =>
       setGameState((prev) => {
         // console.log("prev", prev);
-        const newState = getNextState(prev, orientationLeft, orientationRight);
+        const newState = getNextState(
+          prev,
+          orientationLeft,
+          orientationRight,
+          mode
+        );
         // console.log("newState", newState);
 
         return newState;
@@ -95,19 +103,23 @@ function Stadium() {
       removeEventListener("keyup", keyupListener);
     };
   }, []);
-
+  function handleMode(choice: string) {
+    console.log("choice", choice);
+    setMode("AI");
+  }
   // console.log(gameState);
   // const position_px = String(position2) + "px";
   // console.log(position_px);
 
   //min-w-2 min-h-10
-
+  const buttonStyle =
+    "border-secondary border text-red rounded-md inline-flex items-center justify-center py-3 px-7 text-center text-base font-medium text-secondary bg-green-950 hover:bg-[#E8FBF6] disabled:bg-gray-3 disabled:border-gray-3 disabled:text-dark-5";
   // console.log("width", document.getElementById("background")?.clientWidth);
   return (
     <>
       <div
         id="background"
-        className="flex flex-col relative w-[80%] max-w-md min-h-screen bg-sky-950 h-30 justify-between"
+        className="flex flex-col relative w-[80%] max-w-md h-[60vh] bg-sky-950 h-30 justify-between"
       >
         <div
           id="topwall"
@@ -150,7 +162,17 @@ function Stadium() {
         <div
           id="bottomwall"
           className=" bg-cyan-800 rounded-b-lg w-full h-[40px]"
-        ></div>
+        >
+          {" "}
+          <div className="flex flex-row justify-between">
+            <button className={buttonStyle} onClick={() => handleMode("human")}>
+              Human v. Human
+            </button>
+            <button className={buttonStyle} onClick={() => handleMode("AI")}>
+              Human v. AI
+            </button>
+          </div>
+        </div>
       </div>
     </>
   );
