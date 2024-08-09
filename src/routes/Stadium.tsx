@@ -4,7 +4,6 @@ import {
   Game,
   getInitialState,
   getNextState,
-  movePaddle,
   PADDLE_HEIGHT,
   PADDLE_WIDTH,
   PADDLE_LEFT,
@@ -49,7 +48,6 @@ function Stadium() {
   const [orientationLeft, setOrientationLeft] = useState<Orientation>("none");
   const [orientationRight, setOrientationRight] = useState<Orientation>("none");
   const [mode, setMode] = useState<AIType>("human");
-  const position2 = gameState.coords.player2;
 
   useSetInterval(
     () =>

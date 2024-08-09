@@ -1,16 +1,9 @@
-import { useState } from "react";
 import "./App.css";
-import Start from "./routes/Start";
 import Stadium from "./routes/Stadium";
 
 function App() {
-  const [mode, setMode] = useState("");
-
   console.log("Hello world");
-  function handleMode(choice: string) {
-    console.log("choice", choice);
-    setMode(choice);
-  }
+
   // <Board/ >
   return (
     <>
