@@ -79,8 +79,6 @@ export function getInitialState() {
 type Orientation = "up" | "down" | "none";
 
 let callCount = 0;
-let paddlecallCount = 0;
-let ballCallCount = 0;
 
 export function getNextState(
   state: Game,
@@ -205,10 +203,6 @@ export type CollisionConditions = {
 //     if checkCollision()
 //   });
 // }
-
-function identifyCollider(screencoords: BoxCoords) {}
-
-function computeCoordinates() {}
 
 type FullCoords = {
   lx: number;
