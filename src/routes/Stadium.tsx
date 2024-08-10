@@ -14,6 +14,7 @@ import {
 import { io } from "socket.io-client";
 import * as dotenv from "dotenv";
 import { socket } from "./socket";
+import { registerUser, listUsers, testFunction } from "../services.ts";
 
 // dotenv.config();
 
@@ -59,10 +60,14 @@ function Stadium() {
   const [mode, setMode] = useState<AIType>("human");
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [fooEvents, setFooEvents] = useState([]);
+  const [isMulti, setIsMulti] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [userList, setUserList] = useState([]);
 
   useEffect(() => {
     function onConnect() {
       setIsConnected(true);
+      // socket.join(userName)
     }
 
     function onDisconnect() {
@@ -72,10 +77,17 @@ function Stadium() {
     function onFooEvent(value) {
       setFooEvents((previous) => [...previous, value]);
     }
-
+    function changeGameState(newState) {
+      setGameState(newState);
+    }
+    function onUserListChange(newUserList) {
+      setUserList(newUserList);
+    }
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("foo", onFooEvent);
+    socket.on("newstate", changeGameState);
+    socket.on("newuser", onUserListChange);
 
     return () => {
       socket.off("connect", onConnect);
@@ -136,6 +148,15 @@ function Stadium() {
       removeEventListener("keyup", keyupListener);
     };
   }, []);
+
+  const saveUserName: React.FormEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    console.log("title", formData.get("username"));
+    const username = formData.get("username") as string;
+    registerUser(username);
+  };
+
   function handleMode(choice: string) {
     console.log("choice", choice);
     setMode("AI");
@@ -209,7 +230,7 @@ function Stadium() {
       </div>
       <p>State: {"" + isConnected}</p>;
       <>
-        <button
+        {/* <button
           onClick={() => {
             console.log("connect");
             socket.emit("moveup", "jacob");
@@ -219,6 +240,25 @@ function Stadium() {
           Connect
         </button>
         <button onClick={() => socket.disconnect()}>Disconnect</button>
+         */}
+
+        {/* <div>Users</div>
+        {listUsers().then((response) =>
+          response.map((user: string) => {
+            console.log(user);
+            return <div>{user}</div>;
+          })
+        )} */}
+
+        <div>Save user</div>
+        <form onSubmit={saveUserName}>
+          <input name="username" type="text"></input>
+          <button type="submit">Save</button>
+        </form>
+        <div>Users</div>
+        {userList.map((user: string) => (
+          <div>{user}</div>
+        ))}
       </>
     </>
   );
