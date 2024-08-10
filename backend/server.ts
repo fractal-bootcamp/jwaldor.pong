@@ -31,6 +31,10 @@ io.on("connection", (socket) => {
   socket.on("chat message", (msg) => {
     console.log("message: " + msg);
   });
+  socket.on("adduser", (user) => {
+    CacheService.addName(user, socket.id);
+    io.emit("newuser", CacheService.listUsers());
+  });
   socket.on("moveup", (user, gameId) => {
     console.log("moveup: " + user);
     CacheService.updateStateMove("up", user, gameId);
@@ -39,13 +43,23 @@ io.on("connection", (socket) => {
     console.log("movedown: " + user);
     CacheService.updateStateMove("down", user, gameId);
   });
+  socket.on("joinroom", (p1, p2) => {
+    console.log("joining room");
+    CacheService.initializeGame(p1, p2);
+    socket.join(p2);
+    const otherid = CacheService.getId(p2);
+    console.log("otherid", [otherid as string]);
+    io.in([otherid as string]).socketsJoin(p2);
+
+    io.to(p2).emit("test", "Hello " + p1 + p2);
+  });
 });
 
-app.post("/register-user", (req: Request, res: Response) => {
-  CacheService.addName(req.body.username);
-  io.emit("newuser", CacheService.listUsers());
-  return res.send({});
-});
+// app.post("/register-user", (req: Request, res: Response) => {
+//   CacheService.addName(req.body.username);
+//   io.emit("newuser", CacheService.listUsers());
+//   return res.send({});
+// });
 
 app.get("/active-list", (req: Request, res: Response) => {
   return res.send({ userlist: CacheService.listUsers() });

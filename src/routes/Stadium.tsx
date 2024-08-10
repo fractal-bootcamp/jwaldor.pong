@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import "../index.css";
 import {
   Game,
@@ -62,7 +62,7 @@ function Stadium() {
   const [fooEvents, setFooEvents] = useState([]);
   const [isMulti, setIsMulti] = useState(false);
   const [userName, setUserName] = useState("");
-  const [userList, setUserList] = useState([]);
+  const [userList, setUserList] = useState([""]);
 
   useEffect(() => {
     function onConnect() {
@@ -88,6 +88,9 @@ function Stadium() {
     socket.on("foo", onFooEvent);
     socket.on("newstate", changeGameState);
     socket.on("newuser", onUserListChange);
+    socket.on("test", (stuff) => {
+      console.log(stuff);
+    });
 
     return () => {
       socket.off("connect", onConnect);
@@ -149,12 +152,27 @@ function Stadium() {
     };
   }, []);
 
+  const initializeGame = (event: ChangeEvent) => {
+    event.preventDefault();
+    console.log("initializing game");
+    console.log(event.target.value);
+    console.log("userName", userName);
+    socket.emit("joinroom", userName, event.target.value);
+  };
+
   const saveUserName: React.FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    console.log("title", formData.get("username"));
-    const username = formData.get("username") as string;
-    registerUser(username);
+    if (userName === "") {
+      const formData = new FormData(event.currentTarget);
+      console.log("title", formData.get("username"));
+      const username = formData.get("username") as string;
+      // registerUser(username);
+      socket.emit("adduser", username);
+      console.log("adding user", username);
+      setUserName(username);
+    } else {
+      console.log("user name already set");
+    }
   };
 
   function handleMode(choice: string) {
@@ -169,6 +187,8 @@ function Stadium() {
   const buttonStyle =
     "border-secondary border text-red rounded-md inline-flex items-center justify-center py-3 px-7 text-center text-base font-medium text-secondary bg-green-950 hover:bg-[#E8FBF6] disabled:bg-gray-3 disabled:border-gray-3 disabled:text-dark-5";
   // console.log("width", document.getElementById("background")?.clientWidth);
+  // console.log(userList.filter((user) => user != userName));
+  // console.log(userList, typeof userList);
   return (
     <>
       <div
@@ -259,6 +279,13 @@ function Stadium() {
         {userList.map((user: string) => (
           <div>{user}</div>
         ))}
+        <select onChange={initializeGame}>
+          {userList
+            .filter((user) => user !== userName)
+            .map((user: string) => (
+              <option value={user}>{user}</option>
+            ))}
+        </select>
       </>
     </>
   );
