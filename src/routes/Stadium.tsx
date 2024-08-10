@@ -11,6 +11,11 @@ import {
   SPEED,
   BALL_SIZE,
 } from "../game.ts";
+import { io } from "socket.io-client";
+import * as dotenv from "dotenv";
+import { socket } from "./socket";
+
+// dotenv.config();
 
 // export type BallCoords = {
 //   ycoord: number;
@@ -43,11 +48,41 @@ const useSetInterval = (cb: Function, time: number) => {
   }, [time]);
 };
 
+// "undefined" means the URL will be computed from the `window.location` object
+// const URL =
+//   process.env.NODE_ENV === "production" ? undefined : "http://localhost:3000";
+
 function Stadium() {
   const [gameState, setGameState] = useState<Game>(getInitialState());
   const [orientationLeft, setOrientationLeft] = useState<Orientation>("none");
   const [orientationRight, setOrientationRight] = useState<Orientation>("none");
   const [mode, setMode] = useState<AIType>("human");
+  const [isConnected, setIsConnected] = useState(socket.connected);
+  const [fooEvents, setFooEvents] = useState([]);
+
+  useEffect(() => {
+    function onConnect() {
+      setIsConnected(true);
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+    }
+
+    function onFooEvent(value) {
+      setFooEvents((previous) => [...previous, value]);
+    }
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.on("foo", onFooEvent);
+
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("foo", onFooEvent);
+    };
+  }, []);
 
   useSetInterval(
     () =>
@@ -172,6 +207,19 @@ function Stadium() {
           </div>
         </div>
       </div>
+      <p>State: {"" + isConnected}</p>;
+      <>
+        <button
+          onClick={() => {
+            console.log("connect");
+            socket.emit("moveup", "jacob");
+            socket.connect();
+          }}
+        >
+          Connect
+        </button>
+        <button onClick={() => socket.disconnect()}>Disconnect</button>
+      </>
     </>
   );
 }
