@@ -27,6 +27,16 @@ const io = new Server({
 });
 io.listen(4000);
 
+function broadcastStates() {
+  const newgames = CacheService.updateGames();
+  newgames.forEach((gameState, roomName) => {
+    io.to(roomName).emit("newstate", gameState);
+    console.log("io", roomName, gameState);
+  });
+}
+
+setInterval(() => broadcastStates(), 300);
+
 io.on("connection", (socket) => {
   socket.on("chat message", (msg) => {
     console.log("message: " + msg);
@@ -43,16 +53,26 @@ io.on("connection", (socket) => {
     console.log("movedown: " + user);
     CacheService.updateStateMove("down", user, gameId);
   });
-  socket.on("joinroom", (p1, p2) => {
-    console.log("joining room");
-    CacheService.initializeGame(p1, p2);
-    socket.join(p2);
-    const otherid = CacheService.getId(p2);
-    console.log("otherid", [otherid as string]);
-    io.in([otherid as string]).socketsJoin(p2);
-
-    io.to(p2).emit("test", "Hello " + p1 + p2);
+  socket.on("startaroom", (roomName) => {
+    CacheService.blankGame(roomName);
+    console.log("room added");
+    io.emit("gamelist", CacheService.listRooms());
   });
+
+  socket.on("joinroom", (roomName) => {
+    console.log("joining room", roomName);
+    CacheService.addPlayerGame(roomName, socket.id);
+  });
+  // socket.on("joinroom", (p1, p2) => {
+  //   console.log("joining room");
+  //   CacheService.initializeGame(p1, p2);
+  //   socket.join(p2);
+  //   const otherid = CacheService.getId(p2);
+  //   console.log("otherid", [otherid as string]);
+  //   io.in([otherid as string]).socketsJoin(p2);
+
+  //   io.to(p2).emit("test", "Hello " + p1 + p2);
+  // });
 });
 
 // app.post("/register-user", (req: Request, res: Response) => {
@@ -63,6 +83,10 @@ io.on("connection", (socket) => {
 
 app.get("/active-list", (req: Request, res: Response) => {
   return res.send({ userlist: CacheService.listUsers() });
+});
+
+app.get("/rooms", (req: Request, res: Response) => {
+  return res.send({ userlist: CacheService.listRooms() });
 });
 
 app.get("/", (req: Request, res: Response) => {

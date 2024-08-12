@@ -63,8 +63,12 @@ function Stadium() {
   const [isMulti, setIsMulti] = useState(false);
   const [userName, setUserName] = useState("");
   const [userList, setUserList] = useState([""]);
+  const [gameList, setGameList] = useState<Array<string>>([]);
 
   useEffect(() => {
+    const page_width = document.getElementById("background")?.clientWidth;
+    const page_height = document.getElementById("background")?.clientHeight;
+    console.log(page_width, page_height);
     function onConnect() {
       setIsConnected(true);
       // socket.join(userName)
@@ -77,17 +81,24 @@ function Stadium() {
     function onFooEvent(value) {
       setFooEvents((previous) => [...previous, value]);
     }
-    function changeGameState(newState) {
+    function changeGameState(newState: Game) {
+      console.log("getting new state");
       setGameState(newState);
     }
     function onUserListChange(newUserList) {
       setUserList(newUserList);
+    }
+    function onGameListChange(newGameList: Array<String>) {
+      console.log("newgamelist");
+      console.log(newGameList, "newgamelist");
+      setGameList(newGameList as Array<string>);
     }
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("foo", onFooEvent);
     socket.on("newstate", changeGameState);
     socket.on("newuser", onUserListChange);
+    socket.on("gamelist", onGameListChange);
     socket.on("test", (stuff) => {
       console.log(stuff);
     });
@@ -156,8 +167,7 @@ function Stadium() {
     event.preventDefault();
     console.log("initializing game");
     console.log(event.target.value);
-    console.log("userName", userName);
-    socket.emit("joinroom", userName, event.target.value);
+    socket.emit("joinroom", event.target.value);
   };
 
   const saveUserName: React.FormEventHandler<HTMLFormElement> = (event) => {
@@ -167,9 +177,8 @@ function Stadium() {
       console.log("title", formData.get("username"));
       const username = formData.get("username") as string;
       // registerUser(username);
-      socket.emit("adduser", username);
+      socket.emit("startaroom", username);
       console.log("adding user", username);
-      setUserName(username);
     } else {
       console.log("user name already set");
     }
@@ -193,7 +202,7 @@ function Stadium() {
     <>
       <div
         id="background"
-        className="flex flex-col relative w-[80%] max-w-md h-[60vh] bg-sky-950 h-30 justify-between"
+        className="flex flex-col relative w-[448px] h-[581px] bg-sky-950 h-30 justify-between"
       >
         <div
           id="topwall"
@@ -270,17 +279,17 @@ function Stadium() {
           })
         )} */}
 
-        <div>Save user</div>
+        <div>Save new room</div>
         <form onSubmit={saveUserName}>
           <input name="username" type="text"></input>
           <button type="submit">Save</button>
         </form>
-        <div>Users</div>
-        {userList.map((user: string) => (
+        <div>Join new room</div>
+        {gameList.map((user: string) => (
           <div>{user}</div>
         ))}
         <select onChange={initializeGame}>
-          {userList
+          {gameList
             .filter((user) => user !== userName)
             .map((user: string) => (
               <option value={user}>{user}</option>
