@@ -60,10 +60,11 @@ function Stadium() {
   const [mode, setMode] = useState<AIType>("human");
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [fooEvents, setFooEvents] = useState([]);
-  const [isMulti, setIsMulti] = useState(false);
+  const [isMulti, setIsMulti] = useState(true);
   const [userName, setUserName] = useState("");
   const [userList, setUserList] = useState([""]);
   const [gameList, setGameList] = useState<Array<string>>([]);
+  const [room, setRoom] = useState<string | undefined>();
 
   useEffect(() => {
     const page_width = document.getElementById("background")?.clientWidth;
@@ -110,64 +111,104 @@ function Stadium() {
     };
   }, []);
 
-  useSetInterval(
-    () =>
-      setGameState((prev) => {
-        // console.log("prev", prev);
-        const newState = getNextState(
-          prev,
-          orientationLeft,
-          orientationRight,
-          mode
-        );
-        // console.log("newState", newState);
+  if (!isMulti) {
+    useSetInterval(
+      () =>
+        setGameState((prev) => {
+          // console.log("prev", prev);
+          const newState = getNextState(
+            prev,
+            orientationLeft,
+            orientationRight,
+            mode
+          );
+          // console.log("newState", newState);
 
-        return newState;
-      }),
-    SPEED
-  );
+          return newState;
+        }),
+      SPEED
+    );
+    useEffect(() => {
+      const keydownListener = (event: KeyboardEvent) => {
+        if (event.key === "w") {
+          setOrientationLeft("up");
+          // setPosition1();
+        }
+        if (event.key === "s") {
+          setOrientationLeft("down");
+        }
+        if (event.key === "ArrowUp") {
+          setOrientationRight("up");
+        }
+        if (event.key === "ArrowDown") {
+          setOrientationRight("down");
+        }
+      };
 
-  useEffect(() => {
-    const keydownListener = (event: KeyboardEvent) => {
-      if (event.key === "w") {
-        setOrientationLeft("up");
-        // setPosition1();
-      }
-      if (event.key === "s") {
-        setOrientationLeft("down");
-      }
-      if (event.key === "ArrowUp") {
-        setOrientationRight("up");
-      }
-      if (event.key === "ArrowDown") {
-        setOrientationRight("down");
-      }
-    };
+      const keyupListener = (event: KeyboardEvent) => {
+        if (["w", "s"].includes(event.key)) {
+          setOrientationLeft("none");
+          // setPosition1();
+        }
+        if (["ArrowUp", "ArrowDown"].includes(event.key)) {
+          setOrientationRight("none");
+        }
+      };
 
-    const keyupListener = (event: KeyboardEvent) => {
-      if (["w", "s"].includes(event.key)) {
-        setOrientationLeft("none");
-        // setPosition1();
-      }
-      if (["ArrowUp", "ArrowDown"].includes(event.key)) {
-        setOrientationRight("none");
-      }
-    };
+      addEventListener("keydown", keydownListener);
+      addEventListener("keyup", keyupListener);
 
-    addEventListener("keydown", keydownListener);
-    addEventListener("keyup", keyupListener);
+      return () => {
+        removeEventListener("keydown", keydownListener);
+        removeEventListener("keyup", keyupListener);
+      };
+    }, []);
+  } else {
+    useEffect(() => {
+      const keydownListener = (event: KeyboardEvent) => {
+        if (event.key === "w") {
+          socket.emit("moveup");
+          // setPosition1();
+        }
+        if (event.key === "s") {
+          socket.emit("movedown");
+        }
+        if (event.key === "ArrowUp") {
+          socket.emit("moveup");
+        }
+        if (event.key === "ArrowDown") {
+          socket.emit("movedown");
+        }
+      };
 
-    return () => {
-      removeEventListener("keydown", keydownListener);
-      removeEventListener("keyup", keyupListener);
-    };
-  }, []);
+      const keyupListener = (event: KeyboardEvent) => {
+        if (["w", "s"].includes(event.key)) {
+          socket.emit("movenone");
+          // setPosition1();
+        }
+        if (["ArrowUp", "ArrowDown"].includes(event.key)) {
+          socket.emit("movenone");
+        }
+      };
 
-  const initializeGame = (event: ChangeEvent) => {
+      addEventListener("keydown", keydownListener);
+      addEventListener("keyup", keyupListener);
+
+      return () => {
+        removeEventListener("keydown", keydownListener);
+        removeEventListener("keyup", keyupListener);
+      };
+    }, []);
+  }
+
+  const initializeGame: React.FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
-    console.log("initializing game");
-    console.log(event.target.value);
-    socket.emit("joinroom", event.target.value);
+    const formData = new FormData(event.currentTarget);
+    console.log("creating room");
+    const room = formData.get("room");
+    console.log(formData);
+    console.log("creating room", room, socket.id, "socket.id");
+    socket.emit("joinroom", room);
   };
 
   const saveUserName: React.FormEventHandler<HTMLFormElement> = (event) => {
@@ -288,13 +329,16 @@ function Stadium() {
         {gameList.map((user: string) => (
           <div>{user}</div>
         ))}
-        <select onChange={initializeGame}>
-          {gameList
-            .filter((user) => user !== userName)
-            .map((user: string) => (
-              <option value={user}>{user}</option>
-            ))}
-        </select>
+        <form onSubmit={initializeGame}>
+          <select name="room">
+            {gameList
+              .filter((user) => user !== userName)
+              .map((user: string) => (
+                <option value={user}>{user}</option>
+              ))}
+          </select>
+          <button>Join room</button>
+        </form>
       </>
     </>
   );
