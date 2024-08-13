@@ -19,7 +19,11 @@ const CacheService = {
     const updatedgames = new Map();
     cache.games.forEach((value, key) => {
       if (value.players[0].name && value.players[1].name) {
-        console.log("updating state");
+        console.log(
+          "updating state",
+          value.players[0].name,
+          value.players[1].name
+        );
         value.gameState = getNextState(
           value.gameState,
           value.players[0].orientation,
@@ -82,7 +86,7 @@ const CacheService = {
     } else if (!cache.games.get(roomName)!.players[1].name) {
       cache.games.get(roomName)!.players[1].name = playerId;
     }
-    console.log("added player", cache.games.get(roomName)!);
+    console.log("added player", roomName, playerId, cache.games.get(roomName)!);
     // .set(roomName, {
     //   gameState: getInitialState(),
     //   players: [
@@ -105,11 +109,15 @@ const CacheService = {
 
   updateStateMove: function (
     direction: "up" | "down" | "none",
-    userNum: 0 | 1,
+    user: string,
     gameString: string
   ) {
     if (cache.games.has(gameString) && cache.games.get(gameString)) {
-      cache.games.get(gameString).players[userNum].orientation = direction;
+      cache.games
+        .get(gameString)
+        .players.find((player) => player.name == user).orientation = direction;
+      console.log("updating direction of a user", user, direction);
+      // cache.games.get(gameString)!.players[userNum].orientation = direction;
     } else {
       console.error(gameString, "game not found");
     }

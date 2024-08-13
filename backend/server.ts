@@ -32,12 +32,16 @@ function broadcastStates() {
   newgames.forEach((gameState, roomName) => {
     io.to(roomName).emit("newstate", gameState);
     console.log("io", roomName, gameState);
+    // console.log(io.in(roomName).fetchSockets());
   });
 }
 
-setInterval(() => broadcastStates(), 300);
+setInterval(() => broadcastStates(), 10);
+
+let socketRoomMap = new Map();
 
 io.on("connection", (socket) => {
+  io.emit("gamelist", CacheService.listRooms());
   socket.on("chat message", (msg) => {
     console.log("message: " + msg);
   });
@@ -45,13 +49,25 @@ io.on("connection", (socket) => {
     CacheService.addName(user, socket.id);
     io.emit("newuser", CacheService.listUsers());
   });
-  socket.on("moveup", (user, gameId) => {
-    console.log("moveup: " + user);
-    CacheService.updateStateMove("up", user, gameId);
+  socket.on("moveup", () => {
+    console.log("moveup: " + socket.id);
+    CacheService.updateStateMove("up", socket.id, socketRoomMap.get(socket.id));
   });
-  socket.on("movedown", (user, gameId) => {
-    console.log("movedown: " + user);
-    CacheService.updateStateMove("down", user, gameId);
+  socket.on("movedown", () => {
+    console.log("movedown: " + socket.id);
+    CacheService.updateStateMove(
+      "down",
+      socket.id,
+      socketRoomMap.get(socket.id)
+    );
+  });
+  socket.on("movenone", () => {
+    console.log("movenone: " + socket.id);
+    CacheService.updateStateMove(
+      "none",
+      socket.id,
+      socketRoomMap.get(socket.id)
+    );
   });
   socket.on("startaroom", (roomName) => {
     CacheService.blankGame(roomName);
@@ -61,6 +77,8 @@ io.on("connection", (socket) => {
 
   socket.on("joinroom", (roomName) => {
     console.log("joining room", roomName);
+    socket.join(roomName);
+    socketRoomMap.set(socket.id, roomName);
     CacheService.addPlayerGame(roomName, socket.id);
   });
   // socket.on("joinroom", (p1, p2) => {
