@@ -1,3 +1,4 @@
+import { ModeChoicesType } from "./App";
 // type Game = { cells: Cells; going: "x" | "o" };
 // type Move = "" | "x" | "o";
 // type Cells = [Move, Move, Move, Move, Move, Move, Move, Move, Move]; //9
@@ -84,7 +85,7 @@ export function getNextState(
   state: Game,
   orientationLeft: Orientation,
   orientationRight: Orientation,
-  mode: "AI" | "human"
+  mode: ModeChoicesType
 ): Game {
   // console.log(state, orientationLeft, orientationRight);
   // move right paddle

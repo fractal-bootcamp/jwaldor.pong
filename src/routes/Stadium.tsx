@@ -15,6 +15,7 @@ import { io } from "socket.io-client";
 import * as dotenv from "dotenv";
 import { socket } from "./socket";
 import { registerUser, listUsers, testFunction } from "../services.ts";
+import { ModeChoicesType } from "../App.tsx";
 
 // dotenv.config();
 
@@ -36,7 +37,7 @@ import { registerUser, listUsers, testFunction } from "../services.ts";
 
 type Orientation = "up" | "down" | "none";
 
-type AIType = "human" | "AI";
+// type AIType = "human" | "AI";
 
 const useSetInterval = (cb: Function, time: number) => {
   const cbRef = useRef<Function>(() => {});
@@ -53,14 +54,14 @@ const useSetInterval = (cb: Function, time: number) => {
 // const URL =
 //   process.env.NODE_ENV === "production" ? undefined : "http://localhost:3000";
 
-function Stadium() {
+function Stadium({ mode }: { mode: ModeChoicesType }) {
   const [gameState, setGameState] = useState<Game>(getInitialState());
   const [orientationLeft, setOrientationLeft] = useState<Orientation>("none");
   const [orientationRight, setOrientationRight] = useState<Orientation>("none");
-  const [mode, setMode] = useState<AIType>("human");
+  // const [mode, setMode] = useState<AIType>("human");
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [fooEvents, setFooEvents] = useState([]);
-  const [isMulti, setIsMulti] = useState(true);
+  const [isMulti, setIsMulti] = useState(false);
   const [userName, setUserName] = useState("");
   const [userList, setUserList] = useState([""]);
   const [gameList, setGameList] = useState<Array<string>>([]);
@@ -288,14 +289,14 @@ function Stadium() {
           className=" bg-cyan-800 rounded-b-lg w-full h-[40px]"
         >
           {" "}
-          <div className="flex flex-row justify-between">
+          {/* <div className="flex flex-row justify-between">
             <button className={buttonStyle} onClick={() => handleMode("human")}>
               Human v. Human
             </button>
             <button className={buttonStyle} onClick={() => handleMode("AI")}>
               Human v. AI
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
       <p>State: {"" + isConnected}</p>;

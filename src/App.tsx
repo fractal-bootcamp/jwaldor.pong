@@ -1,7 +1,17 @@
 import "./App.css";
 import Stadium from "./routes/Stadium";
+import GameMode from "./routes/GameModes";
+import { useState } from "react";
+
+export type ModeChoicesType = "human" | "AI" | "multiplayer";
 
 function App() {
+  const [mode, setMode] = useState<ModeChoicesType>("human");
+
+  function handleMode(choice: ModeChoicesType) {
+    console.log("choice", choice);
+    setMode(choice);
+  }
   console.log("Hello world");
 
   // <Board/ >
@@ -9,11 +19,11 @@ function App() {
     <>
       <div className="text-gray-200">Hello</div>
       {/* <Start handleMode={handleMode} /> */}
-      <Stadium />
+      <Stadium mode={mode} />
+      <GameMode handleMode={handleMode} />
     </>
   );
 }
-
 export default App;
 
 // import { useState } from "react";
