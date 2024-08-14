@@ -36,6 +36,7 @@ import { ModeChoicesType } from "../App.tsx";
 // export type Game = { coords: Coords; score: Score; started: boolean };
 
 type Orientation = "up" | "down" | "none";
+type StadiumProps = { mode: ModeChoicesType };
 
 // type AIType = "human" | "AI";
 
@@ -54,65 +55,14 @@ const useSetInterval = (cb: Function, time: number) => {
 // const URL =
 //   process.env.NODE_ENV === "production" ? undefined : "http://localhost:3000";
 
-function Stadium({ mode }: { mode: ModeChoicesType }) {
-  const [gameState, setGameState] = useState<Game>(getInitialState());
+function Stadium({ mode }: StadiumProps) {
   const [orientationLeft, setOrientationLeft] = useState<Orientation>("none");
   const [orientationRight, setOrientationRight] = useState<Orientation>("none");
   // const [mode, setMode] = useState<AIType>("human");
-  const [isConnected, setIsConnected] = useState(socket.connected);
-  const [fooEvents, setFooEvents] = useState([]);
-  const [isMulti, setIsMulti] = useState(false);
   const [userName, setUserName] = useState("");
-  const [userList, setUserList] = useState([""]);
-  const [gameList, setGameList] = useState<Array<string>>([]);
   const [room, setRoom] = useState<string | undefined>();
 
-  useEffect(() => {
-    const page_width = document.getElementById("background")?.clientWidth;
-    const page_height = document.getElementById("background")?.clientHeight;
-    console.log(page_width, page_height);
-    function onConnect() {
-      setIsConnected(true);
-      // socket.join(userName)
-    }
-
-    function onDisconnect() {
-      setIsConnected(false);
-    }
-
-    function onFooEvent(value) {
-      setFooEvents((previous) => [...previous, value]);
-    }
-    function changeGameState(newState: Game) {
-      console.log("getting new state");
-      setGameState(newState);
-    }
-    function onUserListChange(newUserList) {
-      setUserList(newUserList);
-    }
-    function onGameListChange(newGameList: Array<String>) {
-      console.log("newgamelist");
-      console.log(newGameList, "newgamelist");
-      setGameList(newGameList as Array<string>);
-    }
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-    socket.on("foo", onFooEvent);
-    socket.on("newstate", changeGameState);
-    socket.on("newuser", onUserListChange);
-    socket.on("gamelist", onGameListChange);
-    socket.on("test", (stuff) => {
-      console.log(stuff);
-    });
-
-    return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-      socket.off("foo", onFooEvent);
-    };
-  }, []);
-
-  if (!isMulti) {
+  if (!(mode === "multiplayer")) {
     useSetInterval(
       () =>
         setGameState((prev) => {
@@ -226,10 +176,6 @@ function Stadium({ mode }: { mode: ModeChoicesType }) {
     }
   };
 
-  function handleMode(choice: string) {
-    console.log("choice", choice);
-    setMode("AI");
-  }
   // console.log(gameState);
   // const position_px = String(position2) + "px";
   // console.log(position_px);

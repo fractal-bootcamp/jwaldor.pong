@@ -15,7 +15,7 @@ function GameMode({ handleMode }: { handleMode: Function }) {
           className={buttonStyle}
           onClick={() => handleMode("multiplayer")}
         >
-          Multiplayer
+          Join multiplayer lobby
         </button>
       </div>
     </>
