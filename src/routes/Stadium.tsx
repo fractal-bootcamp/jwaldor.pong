@@ -35,146 +35,21 @@ import { ModeChoicesType } from "../App.tsx";
 
 // export type Game = { coords: Coords; score: Score; started: boolean };
 
-type Orientation = "up" | "down" | "none";
-type StadiumProps = { mode: ModeChoicesType };
+type StadiumProps = { mode: ModeChoicesType; gameState: Game };
 
 // type AIType = "human" | "AI";
-
-const useSetInterval = (cb: Function, time: number) => {
-  const cbRef = useRef<Function>(() => {});
-  useEffect(() => {
-    cbRef.current = cb;
-  });
-  useEffect(() => {
-    const interval = setInterval(() => cbRef.current(), time);
-    return () => clearInterval(interval);
-  }, [time]);
-};
 
 // "undefined" means the URL will be computed from the `window.location` object
 // const URL =
 //   process.env.NODE_ENV === "production" ? undefined : "http://localhost:3000";
 
-function Stadium({ mode }: StadiumProps) {
-  const [orientationLeft, setOrientationLeft] = useState<Orientation>("none");
-  const [orientationRight, setOrientationRight] = useState<Orientation>("none");
+function Stadium({ mode, gameState }: StadiumProps) {
   // const [mode, setMode] = useState<AIType>("human");
   const [userName, setUserName] = useState("");
-  const [room, setRoom] = useState<string | undefined>();
 
-  if (!(mode === "multiplayer")) {
-    useSetInterval(
-      () =>
-        setGameState((prev) => {
-          // console.log("prev", prev);
-          const newState = getNextState(
-            prev,
-            orientationLeft,
-            orientationRight,
-            mode
-          );
-          // console.log("newState", newState);
-
-          return newState;
-        }),
-      SPEED
-    );
-    useEffect(() => {
-      const keydownListener = (event: KeyboardEvent) => {
-        if (event.key === "w") {
-          setOrientationLeft("up");
-          // setPosition1();
-        }
-        if (event.key === "s") {
-          setOrientationLeft("down");
-        }
-        if (event.key === "ArrowUp") {
-          setOrientationRight("up");
-        }
-        if (event.key === "ArrowDown") {
-          setOrientationRight("down");
-        }
-      };
-
-      const keyupListener = (event: KeyboardEvent) => {
-        if (["w", "s"].includes(event.key)) {
-          setOrientationLeft("none");
-          // setPosition1();
-        }
-        if (["ArrowUp", "ArrowDown"].includes(event.key)) {
-          setOrientationRight("none");
-        }
-      };
-
-      addEventListener("keydown", keydownListener);
-      addEventListener("keyup", keyupListener);
-
-      return () => {
-        removeEventListener("keydown", keydownListener);
-        removeEventListener("keyup", keyupListener);
-      };
-    }, []);
-  } else {
-    useEffect(() => {
-      const keydownListener = (event: KeyboardEvent) => {
-        if (event.key === "w") {
-          socket.emit("moveup");
-          // setPosition1();
-        }
-        if (event.key === "s") {
-          socket.emit("movedown");
-        }
-        if (event.key === "ArrowUp") {
-          socket.emit("moveup");
-        }
-        if (event.key === "ArrowDown") {
-          socket.emit("movedown");
-        }
-      };
-
-      const keyupListener = (event: KeyboardEvent) => {
-        if (["w", "s"].includes(event.key)) {
-          socket.emit("movenone");
-          // setPosition1();
-        }
-        if (["ArrowUp", "ArrowDown"].includes(event.key)) {
-          socket.emit("movenone");
-        }
-      };
-
-      addEventListener("keydown", keydownListener);
-      addEventListener("keyup", keyupListener);
-
-      return () => {
-        removeEventListener("keydown", keydownListener);
-        removeEventListener("keyup", keyupListener);
-      };
-    }, []);
-  }
-
-  const initializeGame: React.FormEventHandler<HTMLFormElement> = (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    console.log("creating room");
-    const room = formData.get("room");
-    console.log(formData);
-    console.log("creating room", room, socket.id, "socket.id");
-    socket.emit("joinroom", room);
-  };
-
-  const saveUserName: React.FormEventHandler<HTMLFormElement> = (event) => {
-    event.preventDefault();
-    if (userName === "") {
-      const formData = new FormData(event.currentTarget);
-      console.log("title", formData.get("username"));
-      const username = formData.get("username") as string;
-      // registerUser(username);
-      socket.emit("startaroom", username);
-      console.log("adding user", username);
-    } else {
-      console.log("user name already set");
-    }
-  };
+  // const [userList, setUserList] = useState([""]);
+  // const [gameList, setGameList] = useState<Array<string>>([]);
+  // const [gameState, setGameState] = useState<Game>(getInitialState());
 
   // console.log(gameState);
   // const position_px = String(position2) + "px";
@@ -245,7 +120,6 @@ function Stadium({ mode }: StadiumProps) {
           </div> */}
         </div>
       </div>
-      <p>State: {"" + isConnected}</p>;
       <>
         {/* <button
           onClick={() => {
@@ -266,26 +140,6 @@ function Stadium({ mode }: StadiumProps) {
             return <div>{user}</div>;
           })
         )} */}
-
-        <div>Save new room</div>
-        <form onSubmit={saveUserName}>
-          <input name="username" type="text"></input>
-          <button type="submit">Save</button>
-        </form>
-        <div>Join new room</div>
-        {gameList.map((user: string) => (
-          <div>{user}</div>
-        ))}
-        <form onSubmit={initializeGame}>
-          <select name="room">
-            {gameList
-              .filter((user) => user !== userName)
-              .map((user: string) => (
-                <option value={user}>{user}</option>
-              ))}
-          </select>
-          <button>Join room</button>
-        </form>
       </>
     </>
   );

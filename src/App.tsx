@@ -2,12 +2,33 @@ import "./App.css";
 import Stadium from "./routes/Stadium";
 import GameMode from "./routes/GameModes";
 import Lobby from "./routes/Lobby";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { socket } from "./routes/socket";
-import { Game } from "./game";
-import { getInitialState } from "./game";
+import {
+  Game,
+  getInitialState,
+  getNextState,
+  PADDLE_HEIGHT,
+  PADDLE_WIDTH,
+  PADDLE_LEFT,
+  PADDLE_RIGHT,
+  SPEED,
+  BALL_SIZE,
+} from "./game.ts";
 
 export type ModeChoicesType = "human" | "AI" | "multiplayer";
+type Orientation = "up" | "down" | "none";
+
+const useSetInterval = (cb: Function, time: number) => {
+  const cbRef = useRef<Function>(() => {});
+  useEffect(() => {
+    cbRef.current = cb;
+  });
+  useEffect(() => {
+    const interval = setInterval(() => cbRef.current(), time);
+    return () => clearInterval(interval);
+  }, [time]);
+};
 
 function App() {
   const [mode, setMode] = useState<ModeChoicesType>("human");
@@ -16,12 +37,14 @@ function App() {
   const [userList, setUserList] = useState([""]);
   const [gameList, setGameList] = useState<Array<string>>([]);
   const [gameState, setGameState] = useState<Game>(getInitialState());
+  const [orientationLeft, setOrientationLeft] = useState<Orientation>("none");
+  const [orientationRight, setOrientationRight] = useState<Orientation>("none");
+  const [room, setRoom] = useState<string | undefined>();
 
   function handleMode(choice: ModeChoicesType) {
     console.log("choice", choice);
     setMode(choice);
   }
-  console.log("Hello world");
 
   useEffect(() => {
     // const page_width = document.getElementById("background")?.clientWidth;
@@ -66,17 +89,109 @@ function App() {
     };
   }, []);
 
+  if (!(mode === "multiplayer")) {
+    useSetInterval(
+      () =>
+        setGameState((prev) => {
+          // console.log("prev", prev);
+          const newState = getNextState(
+            prev,
+            orientationLeft,
+            orientationRight,
+            mode
+          );
+          // console.log("newState", newState);
+
+          return newState;
+        }),
+      SPEED
+    );
+
+    useEffect(() => {
+      const keydownListener = (event: KeyboardEvent) => {
+        if (event.key === "w") {
+          setOrientationLeft("up");
+          // setPosition1();
+        }
+        if (event.key === "s") {
+          setOrientationLeft("down");
+        }
+        if (event.key === "ArrowUp") {
+          setOrientationRight("up");
+        }
+        if (event.key === "ArrowDown") {
+          setOrientationRight("down");
+        }
+      };
+
+      const keyupListener = (event: KeyboardEvent) => {
+        if (["w", "s"].includes(event.key)) {
+          setOrientationLeft("none");
+          // setPosition1();
+        }
+        if (["ArrowUp", "ArrowDown"].includes(event.key)) {
+          setOrientationRight("none");
+        }
+      };
+
+      addEventListener("keydown", keydownListener);
+      addEventListener("keyup", keyupListener);
+
+      return () => {
+        removeEventListener("keydown", keydownListener);
+        removeEventListener("keyup", keyupListener);
+      };
+    }, []);
+  } else {
+    useEffect(() => {
+      const keydownListener = (event: KeyboardEvent) => {
+        if (event.key === "w") {
+          socket.emit("moveup");
+          // setPosition1();
+        }
+        if (event.key === "s") {
+          socket.emit("movedown");
+        }
+        if (event.key === "ArrowUp") {
+          socket.emit("moveup");
+        }
+        if (event.key === "ArrowDown") {
+          socket.emit("movedown");
+        }
+      };
+
+      const keyupListener = (event: KeyboardEvent) => {
+        if (["w", "s"].includes(event.key)) {
+          socket.emit("movenone");
+          // setPosition1();
+        }
+        if (["ArrowUp", "ArrowDown"].includes(event.key)) {
+          socket.emit("movenone");
+        }
+      };
+
+      addEventListener("keydown", keydownListener);
+      addEventListener("keyup", keyupListener);
+
+      return () => {
+        removeEventListener("keydown", keydownListener);
+        removeEventListener("keyup", keyupListener);
+      };
+    }, []);
+  }
+
   // <Board/ >
   return (
     <>
       <div className="text-gray-200">Hello</div>
       {/* <Start handleMode={handleMode} /> */}
-      <Stadium mode={mode} />
+      <Stadium mode={mode} gameState={gameState} />
       <GameMode handleMode={handleMode} />
-      <Lobby />
+      <Lobby room={room} setRoom={setRoom} gameList={gameList} />
     </>
   );
 }
+
 export default App;
 
 // import { useState } from "react";

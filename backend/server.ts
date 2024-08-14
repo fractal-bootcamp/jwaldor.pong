@@ -22,7 +22,7 @@ app.use(cors());
 const server = createServer(app);
 const io = new Server({
   cors: {
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "http://localhost:5174"],
   },
 });
 io.listen(4000);
