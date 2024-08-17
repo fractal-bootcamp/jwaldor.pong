@@ -22,7 +22,7 @@ app.use(cors());
 const server = createServer(app);
 const io = new Server({
   cors: {
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "http://localhost:5174"],
   },
 });
 io.listen(4000);
@@ -30,6 +30,7 @@ io.listen(4000);
 function broadcastStates() {
   const newgames = CacheService.updateGames();
   newgames.forEach((gameState, roomName) => {
+    // io.to(socketId).emit(/* ... */);
     io.to(roomName).emit("newstate", gameState);
     console.log("io", roomName, gameState);
     // console.log(io.in(roomName).fetchSockets());
