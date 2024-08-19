@@ -9,7 +9,7 @@ const app: Express = express();
 const { createServer } = require("node:http");
 const port = process.env.PORT || 3000;
 
-const jwt = require("express-jwt");
+// const jwt = require("express-jwt");
 
 let bodyParser = require("body-parser");
 // parse application/x-www-form-urlencoded
@@ -22,7 +22,7 @@ app.use(cors());
 const server = createServer(app);
 const io = new Server({
   cors: {
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: ["multipong.onrender.com"],
   },
 });
 io.listen(4000);
