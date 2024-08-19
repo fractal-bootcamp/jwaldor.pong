@@ -22,7 +22,7 @@ app.use(cors());
 const server = createServer(app);
 const io = new Server({
   cors: {
-    origin: ["multipong.onrender.com"],
+    origin: ["https://multipong.onrender.com"],
   },
 });
 io.listen(4000);
