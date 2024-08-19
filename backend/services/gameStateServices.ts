@@ -18,7 +18,7 @@ const CacheService = {
   updateGames: function () {
     const updatedgames = new Map();
     cache.games.forEach((value, key) => {
-      if (value.players[0].name && value.players[1].name) {
+      if (value.players[0].name || value.players[1].name) {
         console.log(
           "updating state",
           value.players[0].name,

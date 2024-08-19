@@ -83,6 +83,7 @@ function App() {
     socket.on("test", (stuff) => {
       console.log(stuff);
     });
+    // socket.join(socket.id)
 
     return () => {
       socket.removeAllListeners();
