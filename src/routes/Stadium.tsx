@@ -1,19 +1,12 @@
-import { ChangeEvent, useEffect, useRef, useState } from "react";
 import "../index.css";
 import {
   Game,
-  getInitialState,
-  getNextState,
   PADDLE_HEIGHT,
   PADDLE_WIDTH,
   PADDLE_LEFT,
   PADDLE_RIGHT,
-  SPEED,
   BALL_SIZE,
 } from "../game.ts";
-import { io } from "socket.io-client";
-import * as dotenv from "dotenv";
-import { socket } from "./socket";
 import { ModeChoicesType } from "../App.tsx";
 
 // dotenv.config();
@@ -42,9 +35,9 @@ type StadiumProps = { mode: ModeChoicesType; gameState: Game };
 // const URL =
 //   process.env.NODE_ENV === "production" ? undefined : "http://localhost:3000";
 
-function Stadium({ mode, gameState }: StadiumProps) {
+function Stadium({ gameState }: StadiumProps) {
   // const [mode, setMode] = useState<AIType>("human");
-  const [userName, setUserName] = useState("");
+  // const [userName, setUserName] = useState("");
 
   // const [userList, setUserList] = useState([""]);
   // const [gameList, setGameList] = useState<Array<string>>([]);
@@ -55,8 +48,6 @@ function Stadium({ mode, gameState }: StadiumProps) {
   // console.log(position_px);
 
   //min-w-2 min-h-10
-  const buttonStyle =
-    "border-secondary border text-red rounded-md inline-flex items-center justify-center py-3 px-7 text-center text-base font-medium text-secondary bg-green-950 hover:bg-[#E8FBF6] disabled:bg-gray-3 disabled:border-gray-3 disabled:text-dark-5";
   // console.log("width", document.getElementById("background")?.clientWidth);
   // console.log(userList.filter((user) => user != userName));
   // console.log(userList, typeof userList);

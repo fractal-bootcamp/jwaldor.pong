@@ -18,6 +18,7 @@ function Lobby({
   const initializeGame = (selected_room: string) => {
     console.log("creating room", selected_room, socket.id, "socket.id");
     socket.emit("joinroom", selected_room);
+    setRoom(selected_room);
     makeMultiplayer();
   };
 
@@ -112,12 +113,12 @@ function Lobby({
             aria-label="Tabs"
             role="tablist"
             aria-orientation="horizontal"
-            onFocus={(e) => setSelectedInput(e.target.value)}
+            onFocus={(e: any) => setSelectedInput(e.target.value)}
           >
             {gameList.map((game) => (
               <button
                 type="button"
-                className="hs-tab-active:border-blue-500 hs-tab-active:text-blue-600 text-lg font-mono py-1 pe-4 inline-flex items-center gap-x-2 border-e-2 border-transparent text-sm whitespace-nowrap text-gray-500 hover:text-blue-600 focus:outline-none focus:text-white disabled:opacity-50 disabled:pointer-events-none active"
+                className="hs-tab-active:border-blue-500 hs-tab-active:text-blue-600 text-lg font-mono py-1 pe-4 inline-flex items-center gap-x-2 border-e-2 border-transparent whitespace-nowrap text-gray-500 hover:text-blue-600 focus:outline-none focus:text-white disabled:opacity-50 disabled:pointer-events-none active"
                 id="vertical-tab-with-border-item-1"
                 aria-selected="true"
                 data-hs-tab="#vertical-tab-with-border-1"
