@@ -42,6 +42,8 @@ setInterval(() => broadcastStates(), 10);
 let socketRoomMap = new Map();
 
 io.on("connection", (socket) => {
+  socket.join(socket.id);
+  CacheService.blankGame(socket.id);
   io.emit("gamelist", CacheService.listRooms());
   socket.on("chat message", (msg) => {
     console.log("message: " + msg);

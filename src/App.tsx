@@ -31,7 +31,7 @@ const useSetInterval = (cb: Function, time: number) => {
 };
 
 function App() {
-  const [mode, setMode] = useState<ModeChoicesType>("human");
+  const [mode, setMode] = useState<ModeChoicesType>("multiplayer");
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [fooEvents, setFooEvents] = useState([]);
   const [userList, setUserList] = useState([""]);
@@ -83,6 +83,7 @@ function App() {
     socket.on("test", (stuff) => {
       console.log(stuff);
     });
+    // socket.join(socket.id)
 
     return () => {
       socket.removeAllListeners();
@@ -187,7 +188,9 @@ function App() {
       {/* <Start handleMode={handleMode} /> */}
       <Stadium mode={mode} gameState={gameState} />
       <GameMode handleMode={handleMode} />
-      <Lobby room={room} setRoom={setRoom} gameList={gameList} />
+      {mode === "multiplayer" && (
+        <Lobby room={room} setRoom={setRoom} gameList={gameList} />
+      )}
     </>
   );
 }
