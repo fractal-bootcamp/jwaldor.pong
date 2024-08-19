@@ -65,14 +65,11 @@ function App() {
       setIsConnected(false);
     }
 
-    function onFooEvent(value) {
-      setFooEvents((previous) => [...previous, value]);
-    }
     function changeGameState(newState: Game) {
       console.log("getting new state");
       setGameState(newState);
     }
-    function onUserListChange(newUserList) {
+    function onUserListChange(newUserList: Array<string>) {
       setUserList(newUserList);
     }
     function onGameListChange(newGameList: Array<String>) {
@@ -82,7 +79,6 @@ function App() {
     }
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
-    socket.on("foo", onFooEvent);
     socket.on("newstate", changeGameState);
     socket.on("newuser", onUserListChange);
     socket.on("gamelist", onGameListChange);

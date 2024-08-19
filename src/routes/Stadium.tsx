@@ -14,7 +14,6 @@ import {
 import { io } from "socket.io-client";
 import * as dotenv from "dotenv";
 import { socket } from "./socket";
-import { registerUser, listUsers, testFunction } from "../services.ts";
 import { ModeChoicesType } from "../App.tsx";
 
 // dotenv.config();
