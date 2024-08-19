@@ -19,7 +19,7 @@ import {
 export type ModeChoicesType = "human" | "AI" | "multiplayer";
 type Orientation = "up" | "down" | "none";
 
-const useSetInterval = (cb: Function, time: number) => {
+const useSetInterval = (cb: Function, time: number, isMulti: boolean) => {
   const cbRef = useRef<Function>(() => {});
   useEffect(() => {
     cbRef.current = cb;
@@ -27,11 +27,12 @@ const useSetInterval = (cb: Function, time: number) => {
   useEffect(() => {
     const interval = setInterval(() => cbRef.current(), time);
     return () => clearInterval(interval);
-  }, [time]);
+  }, [time, isMulti]);
 };
 
 function App() {
   const [mode, setMode] = useState<ModeChoicesType>("human");
+  const [isMulti, setIsMulti] = useState<boolean>(false);
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [fooEvents, setFooEvents] = useState([]);
   const [userList, setUserList] = useState([""]);
@@ -44,6 +45,11 @@ function App() {
   function handleMode(choice: ModeChoicesType) {
     console.log("choice", choice);
     setMode(choice);
+    setIsMulti(choice === "multiplayer");
+  }
+  function makeMultiplayer() {
+    setMode("multiplayer");
+    setIsMulti(true);
   }
 
   useEffect(() => {
@@ -89,96 +95,102 @@ function App() {
     };
   }, []);
 
-  if (!(mode === "multiplayer")) {
-    useSetInterval(
-      () =>
-        setGameState((prev) => {
-          // console.log("prev", prev);
-          const newState = getNextState(
-            prev,
-            orientationLeft,
-            orientationRight,
-            mode
-          );
-          // console.log("newState", newState);
+  useSetInterval(
+    () =>
+      setGameState((prev) => {
+        // console.log("prev", prev);
+        const newState = getNextState(
+          prev,
+          orientationLeft,
+          orientationRight,
+          mode
+        );
+        // console.log("newState", newState);
 
-          return newState;
-        }),
-      SPEED
-    );
+        return newState;
+      }),
+    SPEED,
+    isMulti
+  );
 
-    useEffect(() => {
-      const keydownListener = (event: KeyboardEvent) => {
-        if (event.key === "w") {
-          setOrientationLeft("up");
-          // setPosition1();
-        }
-        if (event.key === "s") {
-          setOrientationLeft("down");
-        }
-        if (event.key === "ArrowUp") {
-          setOrientationRight("up");
-        }
-        if (event.key === "ArrowDown") {
-          setOrientationRight("down");
-        }
-      };
+  useEffect(() => {
+    const keydownListener = (event: KeyboardEvent) => {
+      if (event.key === "w") {
+        setOrientationLeft("up");
+        // setPosition1();
+      }
+      if (event.key === "s") {
+        setOrientationLeft("down");
+      }
+      if (event.key === "ArrowUp") {
+        setOrientationRight("up");
+      }
+      if (event.key === "ArrowDown") {
+        setOrientationRight("down");
+      }
+    };
 
-      const keyupListener = (event: KeyboardEvent) => {
-        if (["w", "s"].includes(event.key)) {
-          setOrientationLeft("none");
-          // setPosition1();
-        }
-        if (["ArrowUp", "ArrowDown"].includes(event.key)) {
-          setOrientationRight("none");
-        }
-      };
+    const keyupListener = (event: KeyboardEvent) => {
+      if (["w", "s"].includes(event.key)) {
+        setOrientationLeft("none");
+        // setPosition1();
+      }
+      if (["ArrowUp", "ArrowDown"].includes(event.key)) {
+        setOrientationRight("none");
+      }
+    };
 
+    if (!isMulti) {
       addEventListener("keydown", keydownListener);
       addEventListener("keyup", keyupListener);
+    }
 
-      return () => {
+    return () => {
+      if (isMulti) {
         removeEventListener("keydown", keydownListener);
         removeEventListener("keyup", keyupListener);
-      };
-    }, []);
-  } else {
-    useEffect(() => {
-      const keydownListener = (event: KeyboardEvent) => {
-        if (event.key === "w") {
-          socket.emit("moveup");
-          // setPosition1();
-        }
-        if (event.key === "s") {
-          socket.emit("movedown");
-        }
-        if (event.key === "ArrowUp") {
-          socket.emit("moveup");
-        }
-        if (event.key === "ArrowDown") {
-          socket.emit("movedown");
-        }
-      };
+      }
+    };
+  }, [isMulti]);
 
-      const keyupListener = (event: KeyboardEvent) => {
-        if (["w", "s"].includes(event.key)) {
-          socket.emit("movenone");
-          // setPosition1();
-        }
-        if (["ArrowUp", "ArrowDown"].includes(event.key)) {
-          socket.emit("movenone");
-        }
-      };
+  useEffect(() => {
+    const keydownListener = (event: KeyboardEvent) => {
+      if (event.key === "w") {
+        socket.emit("moveup");
+        // setPosition1();
+      }
+      if (event.key === "s") {
+        socket.emit("movedown");
+      }
+      if (event.key === "ArrowUp") {
+        socket.emit("moveup");
+      }
+      if (event.key === "ArrowDown") {
+        socket.emit("movedown");
+      }
+    };
 
+    const keyupListener = (event: KeyboardEvent) => {
+      if (["w", "s"].includes(event.key)) {
+        socket.emit("movenone");
+        // setPosition1();
+      }
+      if (["ArrowUp", "ArrowDown"].includes(event.key)) {
+        socket.emit("movenone");
+      }
+    };
+    if (isMulti) {
       addEventListener("keydown", keydownListener);
       addEventListener("keyup", keyupListener);
+    }
 
-      return () => {
+    return () => {
+      if (!isMulti) {
         removeEventListener("keydown", keydownListener);
         removeEventListener("keyup", keyupListener);
-      };
-    }, []);
-  }
+      }
+    };
+  }, [isMulti]);
 
   // <Board/ >
   return (
@@ -187,7 +199,12 @@ function App() {
       {/* <Start handleMode={handleMode} /> */}
       <Stadium mode={mode} gameState={gameState} />
       <GameMode handleMode={handleMode} />
-      <Lobby room={room} setRoom={setRoom} gameList={gameList} />
+      <Lobby
+        room={room}
+        setRoom={setRoom}
+        gameList={gameList}
+        makeMultiplayer={makeMultiplayer}
+      />
     </>
   );
 }
