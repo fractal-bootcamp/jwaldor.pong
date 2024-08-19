@@ -11,12 +11,12 @@ function GameMode({ handleMode }: { handleMode: Function }) {
         <button className={buttonStyle} onClick={() => handleMode("AI")}>
           Human v. AI
         </button>
-        <button
+        {/* <button
           className={buttonStyle}
           onClick={() => handleMode("multiplayer")}
         >
           Join multiplayer lobby
-        </button>
+        </button> */}
       </div>
     </>
   );

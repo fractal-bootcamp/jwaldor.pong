@@ -6,21 +6,19 @@ function Lobby({
   room,
   setRoom,
   gameList,
+  makeMultiplayer,
 }: {
   room: string | undefined;
   setRoom: Function;
   gameList: Array<string>;
+  makeMultiplayer: Function;
 }) {
   const [selectedInput, setSelectedInput] = useState<string | undefined>();
 
-  const initializeGame: React.FormEventHandler<HTMLFormElement> = (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    console.log("creating room");
-    const room = formData.get("room");
-    console.log(formData);
-    console.log("creating room", room, socket.id, "socket.id");
-    socket.emit("joinroom", room);
+  const initializeGame = (selected_room: string) => {
+    console.log("creating room", selected_room, socket.id, "socket.id");
+    socket.emit("joinroom", selected_room);
+    makeMultiplayer();
   };
 
   const saveRoom: React.FormEventHandler<HTMLFormElement> = (event) => {
@@ -131,7 +129,15 @@ function Lobby({
               </button>
             ))}
           </nav>
-          <button>Join game</button>
+          <button
+            onClick={() => {
+              if (selectedInput) {
+                initializeGame(selectedInput);
+              }
+            }}
+          >
+            Join game
+          </button>
         </div>
 
         {/* <form onSubmit={initializeGame}>
