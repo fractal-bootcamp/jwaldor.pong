@@ -86,19 +86,10 @@ function Stadium({ gameState }: StadiumProps) {
   // console.log(userList, typeof userList);
   return (
     <>
-      {/* <canvas
-        id="myCanvas"
-        width="200"
-        height="100"
-        style={{ border: "1px solid #d3d3d3" }}
-      >
-        Your browser does not support the HTML canvas tag.
-      </canvas> */}
       <div
         id="background"
         className="flex flex-col relative w-[448px] h-[581px] bg-sky-950 h-30 justify-between"
       >
-        <canvas id="canvas"></canvas>
         <div
           id="topwall"
           className=" bg-cyan-800 rounded-b-lg w-full h-[40px]"
@@ -112,7 +103,7 @@ function Stadium({ gameState }: StadiumProps) {
             height: String(PADDLE_HEIGHT) + "px",
             left: String(PADDLE_LEFT) + "px",
           }}
-          className="absolute left-[10px] bg-white"
+          className="absolute bg-white"
         ></div>
         {document.getElementById("background")?.clientWidth &&
         document.getElementById("background")?.clientHeight ? (

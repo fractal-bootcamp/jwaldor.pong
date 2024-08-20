@@ -29,6 +29,7 @@ function App() {
   const [orientationLeft, setOrientationLeft] = useState<Orientation>("none");
   const [orientationRight, setOrientationRight] = useState<Orientation>("none");
   const [room, setRoom] = useState<string | undefined>();
+  const [showlobby, setShowLobby] = useState<boolean>(false);
 
   function handleMode(choice: ModeChoicesType) {
     console.log("choice", choice);
@@ -170,16 +171,23 @@ function App() {
   // <Board/ >
   return (
     <>
-      <div className="text-gray-200">Hello</div>
+      <div className="text-gray-200 flex flex-row">Hello</div>
       {/* <Start handleMode={handleMode} /> */}
-      <Stadium mode={mode} gameState={gameState} />
-      <GameMode handleMode={handleMode} />
-      <Lobby
-        room={room}
-        setRoom={setRoom}
-        gameList={gameList}
-        makeMultiplayer={makeMultiplayer}
+      <GameMode
+        handleMode={handleMode}
+        handleLobby={() => {
+          setShowLobby(!showlobby);
+        }}
       />
+      {!showlobby && <Stadium mode={mode} gameState={gameState} />}
+      {showlobby && (
+        <Lobby
+          room={room}
+          setRoom={setRoom}
+          gameList={gameList}
+          makeMultiplayer={makeMultiplayer}
+        />
+      )}
     </>
   );
 }

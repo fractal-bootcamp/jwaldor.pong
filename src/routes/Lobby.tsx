@@ -101,13 +101,18 @@ function Lobby({
         id="background"
         className="flex flex-col relative w-[448px] h-[581px] bg-sky-950 h-30"
       >
-        <div>Save new room</div>
+        <div className="text-white">Save new room</div>
         <form onSubmit={saveRoom}>
           <input name="username" type="text"></input>
-          <button type="submit">Save</button>
+          <button
+            className="text-white bg-blue-600 p-2 rounded-lg ml-3"
+            type="submit"
+          >
+            Save
+          </button>
         </form>
-        <div>Select room</div>
-        <div className="flex flex-row">
+        <div className="text-white">Select room</div>
+        <div className="flex flex-row min-w-20 max-w-60">
           <nav
             className="flex flex-col space-y-2"
             aria-label="Tabs"
@@ -118,7 +123,7 @@ function Lobby({
             {gameList.map((game) => (
               <button
                 type="button"
-                className="hs-tab-active:border-blue-500 hs-tab-active:text-blue-600 text-lg font-mono py-1 pe-4 inline-flex items-center gap-x-2 border-e-2 border-transparent whitespace-nowrap text-gray-500 hover:text-blue-600 focus:outline-none focus:text-white disabled:opacity-50 disabled:pointer-events-none active"
+                className="hs-tab-active:border-blue-500 hs-tab-active:text-blue-600 bg-green-600 text-lg font-mono py-1 gap-x-2 border-e-2 border-transparent whitespace-nowrap text-white hover:text-blue-600 focus:outline-none focus:text-white disabled:opacity-50 disabled:pointer-events-none active mr-2 rounded-lg"
                 id="vertical-tab-with-border-item-1"
                 aria-selected="true"
                 data-hs-tab="#vertical-tab-with-border-1"
@@ -131,6 +136,7 @@ function Lobby({
             ))}
           </nav>
           <button
+            className="text-gray-300 bg-blue-600 p-2 rounded-lg self-start mb-2 hover:text-green-600"
             onClick={() => {
               if (selectedInput) {
                 initializeGame(selectedInput);
@@ -152,7 +158,6 @@ function Lobby({
         </form> */}
       </div>
       {/* <NiceDropdown onSubmit={initializeGame} contents={gameList} /> */}
-      <div className="flex flex-row justify-between">Hello from the lobby!</div>
       {/* <div className="flex flex-wrap"> */}
       {/* <div className="border-e border-gray-200 dark:border-neutral-700"> */}
 
