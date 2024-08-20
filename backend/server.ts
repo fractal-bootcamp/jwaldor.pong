@@ -39,7 +39,7 @@ function broadcastStates() {
   });
 }
 
-setInterval(() => broadcastStates(), 10);
+setInterval(() => broadcastStates(), 50);
 
 let socketRoomMap = new Map();
 
@@ -126,7 +126,3 @@ app.get("/", (req: Request, res: Response) => {
 //   }
 //   res.send("Express + TypeScript Server");
 // });
-
-app.listen(port, () => {
-  console.log(`[server]: Server is running at http://localhost:${port}`);
-});

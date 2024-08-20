@@ -8,6 +8,7 @@ import {
   BALL_SIZE,
 } from "../game.ts";
 import { ModeChoicesType } from "../App.tsx";
+import { useEffect, useRef } from "react";
 
 // dotenv.config();
 
@@ -35,7 +36,39 @@ type StadiumProps = { mode: ModeChoicesType; gameState: Game };
 // const URL =
 //   process.env.NODE_ENV === "production" ? undefined : "http://localhost:3000";
 
+// const Canvas = (props) => {
+//   const canvasRef = useRef(null);
+
+//   const draw = (ctx) => {
+//     ctx.fillStyle = "#000000";
+//     ctx.beginPath();
+//     ctx.arc(50, 100, 20, 0, 2 * Math.PI);
+//     ctx.fill();
+//   };
+
+//   useEffect(() => {
+//     const canvas = canvasRef.current;
+//     const context = canvas.getContext("2d");
+
+//     //Our draw come here
+//     draw(context);
+//   }, [draw]);
+
+//   return <canvas ref={canvasRef} {...props} />;
+// };
+
 function Stadium({ gameState }: StadiumProps) {
+  // useEffect(() => {
+  //   //top barricade
+  //   var c = document.getElementById("myCanvas");
+  //   var ctx = c.getContext("2d");
+  //   ctx.moveTo(0, 0);
+  //   ctx.lineTo(200, 100);
+  //   ctx.stroke();
+
+  //   //bottom barricade
+  // }, [gameState]);
+
   // const [mode, setMode] = useState<AIType>("human");
   // const [userName, setUserName] = useState("");
 
@@ -53,31 +86,10 @@ function Stadium({ gameState }: StadiumProps) {
   // console.log(userList, typeof userList);
   return (
     <>
-      {/* <canvas
-        id="myCanvas"
-        width="40"
-        height="100"
-        style={{ border: "1px solid #d3d3d3" }}
-        className="bg-cyan-800 rounded-b-lg"
-      >
-        Your browser does not support the HTML canvas tag.
-      </canvas> */}
       <div
         id="background"
         className="flex flex-col relative w-[448px] h-[581px] bg-sky-950 h-30 justify-between"
       >
-        {/* <div id="d1" className="absolute top-0 left-0 z-">
-          <canvas
-            id="myCanvas"
-            width="448"
-            height="40"
-            style={{ border: "1px solid #d3d3d3" }}
-            className="bg-cyan-800 rounded-b-lg"
-          >
-            Your browser does not support the HTML canvas tag.
-          </canvas>
-        </div> */}
-
         <div
           id="topwall"
           className=" bg-cyan-800 rounded-b-lg w-full h-[40px]"
