@@ -5,8 +5,9 @@ import Lobby from "./routes/Lobby";
 import { useState, useEffect, useRef } from "react";
 import { socket } from "./routes/socket";
 import { Game, getInitialState, getNextState, SPEED } from "./game.ts";
+import { AnimatePresence } from "framer-motion";
 
-export type ModeChoicesType = "human" | "AI" | "multiplayer";
+export type ModeChoicesType = "human" | "AI" | "multiplayer" | "ended";
 type Orientation = "up" | "down" | "none";
 
 const useSetInterval = (cb: Function, time: number, isMulti: boolean) => {
@@ -36,9 +37,18 @@ function App() {
     setMode(choice);
     setIsMulti(choice === "multiplayer");
   }
-  function makeMultiplayer() {
-    setMode("multiplayer");
-    setIsMulti(true);
+
+  function resetRemoteScore() {}
+  // function resetRoom(choice: string) {
+  //   console.log("choice", choice);
+  //   setMode(choice);
+  //   setIsMulti(choice === "multiplayer");
+  // }
+
+  function leaveRoom() {
+    console.log("choice", choice);
+    setMode("human");
+    setIsMulti(false);
   }
 
   useEffect(() => {
@@ -73,6 +83,7 @@ function App() {
 
   useSetInterval(
     () =>
+      !isMulti &&
       setGameState((prev) => {
         // console.log("prev", prev);
         const newState = getNextState(
@@ -173,21 +184,26 @@ function App() {
     <>
       <div className="text-gray-200 flex flex-row">Hello</div>
       {/* <Start handleMode={handleMode} /> */}
-      <GameMode
-        handleMode={handleMode}
-        handleLobby={() => {
-          setShowLobby(!showlobby);
-        }}
-      />
-      {!showlobby && <Stadium mode={mode} gameState={gameState} />}
-      {showlobby && (
-        <Lobby
-          room={room}
-          setRoom={setRoom}
-          gameList={gameList}
-          makeMultiplayer={makeMultiplayer}
+      {
+        <GameMode
+          handleMode={handleMode}
+          handleLobby={() => {
+            setShowLobby(!showlobby);
+          }}
         />
-      )}
+      }
+
+      <AnimatePresence>
+        {!showlobby && <Stadium mode={mode} gameState={gameState} />}
+        {showlobby && (
+          <Lobby
+            room={room}
+            setRoom={setRoom}
+            gameList={gameList}
+            makeMultiplayer={() => handleMode("multiplayer")}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 }

@@ -46,8 +46,8 @@ export type BoxCoords = {
   ybcoord: number;
 };
 
-const STEP_SIZE = 2;
-export const SPEED = 10;
+const STEP_SIZE = 5;
+export const SPEED = 5;
 
 export const PADDLE_WIDTH = 8;
 export const PADDLE_HEIGHT = 45;
@@ -71,8 +71,8 @@ export function getInitialState() {
       ball: {
         ycoord: 200,
         xcoord: 350,
-        xvelocity: 1,
-        yvelocity: 1,
+        xvelocity: 5,
+        yvelocity: 5,
       },
     },
     score: { player1: 0, player2: 0 },

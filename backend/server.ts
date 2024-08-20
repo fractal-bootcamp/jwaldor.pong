@@ -78,6 +78,8 @@ io.on("connection", (socket) => {
     io.emit("gamelist", CacheService.listRooms());
   });
 
+  // socket.on("leaveroom", )
+
   socket.on("joinroom", (roomName) => {
     console.log("joining room", roomName);
     socket.join(roomName);

@@ -1,5 +1,6 @@
 import { socket } from "./socket";
 import { useState } from "react";
+import { motion } from "framer-motion";
 // import nav from "@preline/tabs";
 
 function Lobby({
@@ -97,7 +98,11 @@ function Lobby({
   // };
   return (
     <>
-      <div
+      <motion.div
+        key={"lobby_key"}
+        exit={{ opacity: 0 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         id="background"
         className="flex flex-col relative w-[448px] h-[581px] bg-sky-950 h-30"
       >
@@ -118,12 +123,15 @@ function Lobby({
             aria-label="Tabs"
             role="tablist"
             aria-orientation="horizontal"
-            onFocus={(e: any) => setSelectedInput(e.target.value)}
+            onFocus={(e: any) => {
+              setSelectedInput(e.target.value);
+              console.log("roomselected", e.target.value);
+            }}
           >
             {gameList.map((game) => (
               <button
                 type="button"
-                className="hs-tab-active:border-blue-500 hs-tab-active:text-blue-600 bg-green-600 text-lg font-mono py-1 gap-x-2 border-e-2 border-transparent whitespace-nowrap text-white hover:text-blue-600 focus:outline-none focus:text-white disabled:opacity-50 disabled:pointer-events-none active mr-2 rounded-lg"
+                className="hs-tab-active:border-blue-500 hs-tab-active:text-blue-600 bg-green-600 text-lg font-mono py-1 gap-x-2 border-e-2 border-transparent whitespace-nowra hover:text-blue-600 focus:outline-none focus:text-white disabled:opacity-50 disabled:pointer-events-none active mr-2 rounded-lg"
                 id="vertical-tab-with-border-item-1"
                 aria-selected="true"
                 data-hs-tab="#vertical-tab-with-border-1"
@@ -136,7 +144,7 @@ function Lobby({
             ))}
           </nav>
           <button
-            className="text-gray-300 bg-blue-600 p-2 rounded-lg self-start mb-2 hover:text-green-600"
+            className="text-white bg-blue-600 p-2 rounded-lg self-start mb-2 hover:text-green-600"
             onClick={() => {
               if (selectedInput) {
                 initializeGame(selectedInput);
@@ -156,7 +164,7 @@ function Lobby({
           </select>
           <button>Join room</button>
         </form> */}
-      </div>
+      </motion.div>
       {/* <NiceDropdown onSubmit={initializeGame} contents={gameList} /> */}
       {/* <div className="flex flex-wrap"> */}
       {/* <div className="border-e border-gray-200 dark:border-neutral-700"> */}

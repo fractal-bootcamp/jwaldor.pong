@@ -9,6 +9,7 @@ import {
 } from "../game.ts";
 import { ModeChoicesType } from "../App.tsx";
 import { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 
 // dotenv.config();
 
@@ -86,7 +87,11 @@ function Stadium({ gameState }: StadiumProps) {
   // console.log(userList, typeof userList);
   return (
     <>
-      <div
+      <motion.div
+        key={"stadium_key"}
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.5 }}
         id="background"
         className="flex flex-col relative w-[448px] h-[581px] bg-sky-950 h-30 justify-between"
       >
@@ -142,7 +147,7 @@ function Stadium({ gameState }: StadiumProps) {
             </button>
           </div> */}
         </div>
-      </div>
+      </motion.div>
       <>
         {/* <button
           onClick={() => {
