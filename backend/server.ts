@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 
 app.use(cors());
 
-const origins = ["https://multipong.onrender.com"];
+const origins = [process.env.FRONTEND_ADDRESS as string];
 
 const server = createServer(app);
 const io = new Server({

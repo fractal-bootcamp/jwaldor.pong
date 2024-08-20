@@ -4,4 +4,4 @@ import { io } from "socket.io-client";
 // // const URL =
 //   process.env.NODE_ENV === "production" ? undefined : "http://localhost:3000";
 
-export const socket = io("https://jwpongbackend.onrender.com:4000");
+export const socket = io(process.env.BACKEND_ADDRESS as string);
