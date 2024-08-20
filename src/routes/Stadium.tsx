@@ -1,21 +1,14 @@
-import { ChangeEvent, useEffect, useRef, useState } from "react";
 import "../index.css";
 import {
   Game,
-  getInitialState,
-  getNextState,
   PADDLE_HEIGHT,
   PADDLE_WIDTH,
   PADDLE_LEFT,
   PADDLE_RIGHT,
-  SPEED,
   BALL_SIZE,
 } from "../game.ts";
-import { io } from "socket.io-client";
-import * as dotenv from "dotenv";
-import { socket } from "./socket";
-import { registerUser, listUsers, testFunction } from "../services.ts";
 import { ModeChoicesType } from "../App.tsx";
+import { useEffect, useRef } from "react";
 
 // dotenv.config();
 
@@ -43,9 +36,41 @@ type StadiumProps = { mode: ModeChoicesType; gameState: Game };
 // const URL =
 //   process.env.NODE_ENV === "production" ? undefined : "http://localhost:3000";
 
-function Stadium({ mode, gameState }: StadiumProps) {
+// const Canvas = (props) => {
+//   const canvasRef = useRef(null);
+
+//   const draw = (ctx) => {
+//     ctx.fillStyle = "#000000";
+//     ctx.beginPath();
+//     ctx.arc(50, 100, 20, 0, 2 * Math.PI);
+//     ctx.fill();
+//   };
+
+//   useEffect(() => {
+//     const canvas = canvasRef.current;
+//     const context = canvas.getContext("2d");
+
+//     //Our draw come here
+//     draw(context);
+//   }, [draw]);
+
+//   return <canvas ref={canvasRef} {...props} />;
+// };
+
+function Stadium({ gameState }: StadiumProps) {
+  // useEffect(() => {
+  //   //top barricade
+  //   var c = document.getElementById("myCanvas");
+  //   var ctx = c.getContext("2d");
+  //   ctx.moveTo(0, 0);
+  //   ctx.lineTo(200, 100);
+  //   ctx.stroke();
+
+  //   //bottom barricade
+  // }, [gameState]);
+
   // const [mode, setMode] = useState<AIType>("human");
-  const [userName, setUserName] = useState("");
+  // const [userName, setUserName] = useState("");
 
   // const [userList, setUserList] = useState([""]);
   // const [gameList, setGameList] = useState<Array<string>>([]);
@@ -56,17 +81,24 @@ function Stadium({ mode, gameState }: StadiumProps) {
   // console.log(position_px);
 
   //min-w-2 min-h-10
-  const buttonStyle =
-    "border-secondary border text-red rounded-md inline-flex items-center justify-center py-3 px-7 text-center text-base font-medium text-secondary bg-green-950 hover:bg-[#E8FBF6] disabled:bg-gray-3 disabled:border-gray-3 disabled:text-dark-5";
   // console.log("width", document.getElementById("background")?.clientWidth);
   // console.log(userList.filter((user) => user != userName));
   // console.log(userList, typeof userList);
   return (
     <>
+      {/* <canvas
+        id="myCanvas"
+        width="200"
+        height="100"
+        style={{ border: "1px solid #d3d3d3" }}
+      >
+        Your browser does not support the HTML canvas tag.
+      </canvas> */}
       <div
         id="background"
         className="flex flex-col relative w-[448px] h-[581px] bg-sky-950 h-30 justify-between"
       >
+        <canvas id="canvas"></canvas>
         <div
           id="topwall"
           className=" bg-cyan-800 rounded-b-lg w-full h-[40px]"

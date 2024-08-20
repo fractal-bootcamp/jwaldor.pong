@@ -4,17 +4,7 @@ import GameMode from "./routes/GameModes";
 import Lobby from "./routes/Lobby";
 import { useState, useEffect, useRef } from "react";
 import { socket } from "./routes/socket";
-import {
-  Game,
-  getInitialState,
-  getNextState,
-  PADDLE_HEIGHT,
-  PADDLE_WIDTH,
-  PADDLE_LEFT,
-  PADDLE_RIGHT,
-  SPEED,
-  BALL_SIZE,
-} from "./game.ts";
+import { Game, getInitialState, getNextState, SPEED } from "./game.ts";
 
 export type ModeChoicesType = "human" | "AI" | "multiplayer";
 type Orientation = "up" | "down" | "none";
@@ -33,9 +23,7 @@ const useSetInterval = (cb: Function, time: number, isMulti: boolean) => {
 function App() {
   const [mode, setMode] = useState<ModeChoicesType>("human");
   const [isMulti, setIsMulti] = useState<boolean>(false);
-  const [isConnected, setIsConnected] = useState(socket.connected);
-  const [fooEvents, setFooEvents] = useState([]);
-  const [userList, setUserList] = useState([""]);
+  const [userList, setUserList] = useState([""]); //i think the user list is unneccessary now but i might start naming users again later and use the names to display the rooms
   const [gameList, setGameList] = useState<Array<string>>([]);
   const [gameState, setGameState] = useState<Game>(getInitialState());
   const [orientationLeft, setOrientationLeft] = useState<Orientation>("none");
@@ -56,33 +44,20 @@ function App() {
     // const page_width = document.getElementById("background")?.clientWidth;
     // const page_height = document.getElementById("background")?.clientHeight;
     // console.log(page_width, page_height);
-    function onConnect() {
-      setIsConnected(true);
-      // socket.join(userName)
-    }
 
-    function onDisconnect() {
-      setIsConnected(false);
-    }
-
-    function onFooEvent(value) {
-      setFooEvents((previous) => [...previous, value]);
-    }
     function changeGameState(newState: Game) {
       console.log("getting new state");
       setGameState(newState);
     }
-    function onUserListChange(newUserList) {
+    function onUserListChange(newUserList: Array<string>) {
       setUserList(newUserList);
+      console.log(userList);
     }
     function onGameListChange(newGameList: Array<String>) {
       console.log("newgamelist");
       console.log(newGameList, "newgamelist");
       setGameList(newGameList as Array<string>);
     }
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-    socket.on("foo", onFooEvent);
     socket.on("newstate", changeGameState);
     socket.on("newuser", onUserListChange);
     socket.on("gamelist", onGameListChange);

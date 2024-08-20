@@ -9,7 +9,7 @@ const app: Express = express();
 const { createServer } = require("node:http");
 const port = process.env.PORT || 3000;
 
-const jwt = require("express-jwt");
+// const jwt = require("express-jwt");
 
 let bodyParser = require("body-parser");
 // parse application/x-www-form-urlencoded
@@ -19,10 +19,12 @@ app.use(bodyParser.json());
 
 app.use(cors());
 
+const origins = [process.env.FRONTEND_ADDRESS as string];
+
 const server = createServer(app);
 const io = new Server({
   cors: {
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: origins,
   },
 });
 io.listen(4000);
@@ -37,7 +39,7 @@ function broadcastStates() {
   });
 }
 
-setInterval(() => broadcastStates(), 10);
+setInterval(() => broadcastStates(), 50);
 
 let socketRoomMap = new Map();
 
@@ -124,7 +126,3 @@ app.get("/", (req: Request, res: Response) => {
 //   }
 //   res.send("Express + TypeScript Server");
 // });
-
-app.listen(port, () => {
-  console.log(`[server]: Server is running at http://localhost:${port}`);
-});

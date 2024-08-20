@@ -114,8 +114,8 @@ const CacheService = {
   ) {
     if (cache.games.has(gameString) && cache.games.get(gameString)) {
       cache.games
-        .get(gameString)
-        .players.find((player) => player.name == user).orientation = direction;
+        .get(gameString)!
+        .players.find((player) => player.name == user)!.orientation = direction;
       console.log("updating direction of a user", user, direction);
       // cache.games.get(gameString)!.players[userNum].orientation = direction;
     } else {
