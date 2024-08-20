@@ -39,7 +39,7 @@ function broadcastStates() {
   });
 }
 
-setInterval(() => broadcastStates(), 10);
+setInterval(() => broadcastStates(), 50);
 
 let socketRoomMap = new Map();
 
