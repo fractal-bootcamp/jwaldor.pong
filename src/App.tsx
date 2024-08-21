@@ -62,7 +62,7 @@ function App() {
   // }
 
   function leaveRoom() {
-    console.log("choice", choice);
+    // console.log("choice", choice);
     setMode("human");
   }
 
@@ -109,7 +109,7 @@ function App() {
           />
         )}
       </AnimatePresence>
-      <GameOver />
+      {/* <GameOver /> */}
     </>
   );
 }
