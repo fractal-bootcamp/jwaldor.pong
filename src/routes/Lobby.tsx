@@ -123,10 +123,6 @@ function Lobby({
             aria-label="Tabs"
             role="tablist"
             aria-orientation="horizontal"
-            onFocus={(e: any) => {
-              setSelectedInput(e.target.value);
-              console.log("roomselected", e.target.value);
-            }}
           >
             {gameList.map((game) => (
               <button
@@ -137,6 +133,10 @@ function Lobby({
                 data-hs-tab="#vertical-tab-with-border-1"
                 aria-controls="vertical-tab-with-border-1"
                 role="tab"
+                onClick={(e: any) => {
+                  setSelectedInput(game);
+                  console.log("roomselected", e.target.value);
+                }}
                 value={game}
               >
                 {game}
