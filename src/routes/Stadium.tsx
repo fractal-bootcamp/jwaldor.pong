@@ -8,9 +8,9 @@ import {
   BALL_SIZE,
 } from "../game.ts";
 import { ModeChoicesType } from "../App.tsx";
-import { useEffect, useRef } from "react";
+// import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { page_height, page_width } from "../game.ts";
+// import { page_height, page_width } from "../game.ts";
 
 // dotenv.config();
 

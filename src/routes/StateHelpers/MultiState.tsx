@@ -1,16 +1,16 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 import { Game } from "../../game";
 import { socket } from "../socket";
 
 export const MultiState = ({
   setGameState,
-  setUserList,
-  setGameList,
-}: {
+}: // setUserList,
+// setGameList,
+{
   setGameState: Function;
-  setUserList: Function;
-  setGameList: Function;
+  // setUserList: Function;
+  // setGameList: Function;
 }) => {
   useEffect(() => {
     // const page_width = document.getElementById("background")?.clientWidth;
