@@ -8,12 +8,17 @@ import { Game, getInitialState } from "./game.ts";
 import { AnimatePresence } from "framer-motion";
 import { SingleState } from "./routes/StateHelpers/SingleState.tsx";
 import { MultiState } from "./routes/StateHelpers/MultiState.tsx";
+import { Route, useParams } from "react-router-dom";
+
 // import GameOver from "./routes/GameOver.tsx";
 
 export type ModeChoicesType = "human" | "AI" | "multiplayer" | "ended";
 export type Orientation = "up" | "down" | "none";
 
 function App() {
+  // console.log("notinmulti");
+  const params = useParams();
+  // console.log("roomName", params.roomName);
   const [mode, setMode] = useState<ModeChoicesType>("human");
   // const [userList, setUserList] = useState([""]); //i think the user list is unneccessary now but i might start naming users again later and use the names to display the rooms
   const [gameList, setGameList] = useState<Array<string>>([]);
@@ -22,6 +27,19 @@ function App() {
   const [orientationRight, setOrientationRight] = useState<Orientation>("none");
   const [room, setRoom] = useState<string | undefined>();
   const [showlobby, setShowLobby] = useState<boolean>(false);
+
+  const initializeGame = (selected_room: string) => {
+    console.log("creating room", selected_room, socket.id, "socket.id");
+    socket.emit("joinroom", selected_room);
+    setRoom(selected_room);
+    handleMode("multiplayer");
+  };
+
+  useEffect(() => {
+    if (params.roomName) {
+      initializeGame(params.roomName);
+    }
+  }, []);
 
   useEffect(() => {
     // const page_width = document.getElementById("background")?.clientWidth;
@@ -101,12 +119,7 @@ function App() {
       <AnimatePresence>
         {!showlobby && <Stadium mode={mode} gameState={gameState} />}
         {showlobby && (
-          <Lobby
-            room={room}
-            setRoom={setRoom}
-            gameList={gameList}
-            makeMultiplayer={() => handleMode("multiplayer")}
-          />
+          <Lobby initializeGame={initializeGame} gameList={gameList} />
         )}
       </AnimatePresence>
       {/* <GameOver /> */}

@@ -4,37 +4,21 @@ import { motion } from "framer-motion";
 // import nav from "@preline/tabs";
 
 function Lobby({
-  room,
-  setRoom,
+  initializeGame,
   gameList,
-  makeMultiplayer,
 }: {
-  room: string | undefined;
-  setRoom: Function;
+  initializeGame: Function;
   gameList: Array<string>;
-  makeMultiplayer: Function;
 }) {
   const [selectedInput, setSelectedInput] = useState<string | undefined>();
 
-  const initializeGame = (selected_room: string) => {
-    console.log("creating room", selected_room, socket.id, "socket.id");
-    socket.emit("joinroom", selected_room);
-    setRoom(selected_room);
-    makeMultiplayer();
-  };
-
   const saveRoom: React.FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
-    if (!room) {
-      const formData = new FormData(event.currentTarget);
-      console.log("title", formData.get("username"));
-      const username = formData.get("username") as string;
-      // registerUser(username);
-      socket.emit("startaroom", username);
-      console.log("adding room", username);
-    } else {
-      console.log("user name already set");
-    }
+    const formData = new FormData(event.currentTarget);
+    console.log("title", formData.get("username"));
+    const username = formData.get("username") as string;
+    // registerUser(username);
+    socket.emit("startaroom", username);
   };
 
   // const NiceDropdown = ({
