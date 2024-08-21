@@ -1,9 +1,9 @@
 import "./App.css";
-import Stadium from "./routes/Stadium";
-import GameMode from "./routes/GameModes";
-import Lobby from "./routes/Lobby";
+import Stadium from "./routes/Stadium.tsx";
+import GameMode from "./routes/GameModes.tsx";
+import Lobby from "./routes/Lobby.tsx";
 import { useState, useEffect } from "react";
-import { socket } from "./routes/socket";
+import { socket } from "./routes/socket.ts";
 import { Game, getInitialState } from "./game.ts";
 import { AnimatePresence } from "framer-motion";
 import { SingleState } from "./routes/StateHelpers/SingleState.tsx";
@@ -15,31 +15,18 @@ import { Route, useParams } from "react-router-dom";
 export type ModeChoicesType = "human" | "AI" | "multiplayer" | "ended";
 export type Orientation = "up" | "down" | "none";
 
-function App() {
-  // console.log("notinmulti");
+function AppMulti() {
+  console.log("inmulti");
   const params = useParams();
-  // console.log("roomName", params.roomName);
-  const [mode, setMode] = useState<ModeChoicesType>("human");
+  console.log("roomName", params.roomName);
+  const [mode, setMode] = useState<ModeChoicesType>("multiplayer");
   // const [userList, setUserList] = useState([""]); //i think the user list is unneccessary now but i might start naming users again later and use the names to display the rooms
   const [gameList, setGameList] = useState<Array<string>>([]);
   const [gameState, setGameState] = useState<Game>(getInitialState());
   const [orientationLeft, setOrientationLeft] = useState<Orientation>("none");
   const [orientationRight, setOrientationRight] = useState<Orientation>("none");
-  const [room, setRoom] = useState<string | undefined>();
+  const [room, setRoom] = useState<string | undefined>(params.roomName);
   const [showlobby, setShowLobby] = useState<boolean>(false);
-
-  const initializeGame = (selected_room: string) => {
-    console.log("creating room", selected_room, socket.id, "socket.id");
-    socket.emit("joinroom", selected_room);
-    setRoom(selected_room);
-    handleMode("multiplayer");
-  };
-
-  useEffect(() => {
-    if (params.roomName) {
-      initializeGame(params.roomName);
-    }
-  }, []);
 
   useEffect(() => {
     // const page_width = document.getElementById("background")?.clientWidth;
@@ -119,7 +106,12 @@ function App() {
       <AnimatePresence>
         {!showlobby && <Stadium mode={mode} gameState={gameState} />}
         {showlobby && (
-          <Lobby initializeGame={initializeGame} gameList={gameList} />
+          <Lobby
+            room={room}
+            setRoom={setRoom}
+            gameList={gameList}
+            makeMultiplayer={() => handleMode("multiplayer")}
+          />
         )}
       </AnimatePresence>
       {/* <GameOver /> */}
@@ -127,7 +119,7 @@ function App() {
   );
 }
 
-export default App;
+export default AppMulti;
 
 // import { useState } from "react";
 // import reactLogo from "./assets/react.svg";
