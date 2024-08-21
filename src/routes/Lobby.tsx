@@ -1,6 +1,8 @@
 import { socket } from "./socket";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+
 // import nav from "@preline/tabs";
 
 function Lobby({
@@ -11,6 +13,8 @@ function Lobby({
   gameList: Array<string>;
 }) {
   const [selectedInput, setSelectedInput] = useState<string | undefined>();
+
+  const navigate = useNavigate();
 
   const saveRoom: React.FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
@@ -131,6 +135,7 @@ function Lobby({
             className="text-white bg-blue-600 p-2 rounded-lg self-start mb-2 hover:text-green-600"
             onClick={() => {
               if (selectedInput) {
+                // navigate("/room/" + selectedInput);
                 initializeGame(selectedInput);
               }
             }}
