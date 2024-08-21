@@ -3,6 +3,7 @@ import { SPEED } from "../../game";
 import { Orientation } from "../../App";
 import { getNextState } from "../../game";
 import { ModeChoicesType } from "../../App";
+import { Game } from "../../game";
 
 const useSetInterval = (cb: Function, time: number) => {
   const cbRef = useRef<Function>(() => {});
@@ -68,7 +69,7 @@ export const SingleState = ({
 
   useSetInterval(
     () =>
-      setGameState((prev) => {
+      setGameState((prev: Game) => {
         // console.log("prev", prev);
         const newState = getNextState(
           prev,
