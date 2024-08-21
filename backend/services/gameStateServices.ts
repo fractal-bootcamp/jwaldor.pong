@@ -15,15 +15,18 @@ type GameMap = Map<String, PairedGame>;
 let cache: ServerCache = { ids: [], names: [], games: new Map() };
 
 const CacheService = {
+  deleteGame: function () {
+    // cache.games.delete()
+  },
   updateGames: function () {
     const updatedgames = new Map();
     cache.games.forEach((value, key) => {
       if (value.players[0].name && value.players[1].name) {
-        console.log(
-          "updating state",
-          value.players[0].name,
-          value.players[1].name
-        );
+        // console.log(
+        //   "updating state",
+        //   value.players[0].name,
+        //   value.players[1].name
+        // );
         value.gameState = getNextState(
           value.gameState,
           value.players[0].orientation,
@@ -113,6 +116,13 @@ const CacheService = {
     gameString: string
   ) {
     if (cache.games.has(gameString) && cache.games.get(gameString)) {
+      console.log("cache.games.get(gameString)");
+      console.log(cache.games.get(gameString));
+      console.log(
+        cache.games
+          .get(gameString)!
+          .players.find((player) => player.name == user)
+      );
       cache.games
         .get(gameString)!
         .players.find((player) => player.name == user)!.orientation = direction;

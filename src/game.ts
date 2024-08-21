@@ -59,6 +59,9 @@ export const BALL_SIZE = 10;
 export const BALL_START_X = 300;
 export const BALL_START_Y = 300;
 
+export const page_width = 448;
+export const page_height = 581;
+
 export function getInitialState() {
   return {
     coords: {
@@ -265,8 +268,6 @@ function paddleCollision(
 }
 
 function updateBallVelocity(state: Game) {
-  const page_width = document.getElementById("background")?.clientWidth;
-  const page_height = document.getElementById("background")?.clientHeight;
   if (page_width && page_height) {
     const leftpad = {
       lx: PADDLE_LEFT,
@@ -318,7 +319,6 @@ function updateBallVelocity(state: Game) {
 // const newVelocity =
 
 function checkWin(gameState: Game) {
-  const page_width = document.getElementById("background")?.clientWidth;
   if (page_width) {
     if (gameState.coords.ball.xcoord > page_width) {
       gameState.coords.ball.xcoord = BALL_START_X;
