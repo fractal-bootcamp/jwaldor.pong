@@ -34,7 +34,7 @@ function broadcastStates() {
   newgames.forEach((gameState, roomName) => {
     // io.to(socketId).emit(/* ... */);
     io.to(roomName).emit("newstate", gameState);
-    console.log("io", roomName, gameState);
+    // console.log("io", roomName, gameState);
     // console.log(io.in(roomName).fetchSockets());
   });
 }

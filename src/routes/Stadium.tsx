@@ -10,6 +10,7 @@ import {
 import { ModeChoicesType } from "../App.tsx";
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { page_height, page_width } from "../game.ts";
 
 // dotenv.config();
 
@@ -92,7 +93,7 @@ function Stadium({ gameState }: StadiumProps) {
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ duration: 0.5 }}
-        id="background"
+        id="stadium"
         className="flex flex-col relative w-[448px] h-[581px] bg-sky-950 h-30 justify-between"
       >
         <div
@@ -110,20 +111,15 @@ function Stadium({ gameState }: StadiumProps) {
           }}
           className="absolute bg-white"
         ></div>
-        {document.getElementById("background")?.clientWidth &&
-        document.getElementById("background")?.clientHeight ? (
-          <div
-            style={{
-              bottom: String(gameState.coords.ball.ycoord) + "px",
-              left: String(gameState.coords.ball.xcoord) + "px",
-              width: String(BALL_SIZE) + "px",
-              height: String(BALL_SIZE) + "px",
-            }}
-            className={`absolute rounded bg-white`}
-          ></div>
-        ) : (
-          <div></div>
-        )}
+        <div
+          style={{
+            bottom: String(gameState.coords.ball.ycoord) + "px",
+            left: String(gameState.coords.ball.xcoord) + "px",
+            width: String(BALL_SIZE) + "px",
+            height: String(BALL_SIZE) + "px",
+          }}
+          className={`absolute rounded bg-white`}
+        ></div>
         <div
           style={{
             bottom: String(gameState.coords.player2) + "px",

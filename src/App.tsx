@@ -8,6 +8,7 @@ import { Game, getInitialState, getNextState, SPEED } from "./game.ts";
 import { AnimatePresence } from "framer-motion";
 import { SingleState } from "./routes/StateHelpers/SingleState.tsx";
 import { MultiState } from "./routes/StateHelpers/MultiState.tsx";
+import GameOver from "./routes/GameOver.tsx";
 
 export type ModeChoicesType = "human" | "AI" | "multiplayer" | "ended";
 export type Orientation = "up" | "down" | "none";
@@ -21,6 +22,32 @@ function App() {
   const [orientationRight, setOrientationRight] = useState<Orientation>("none");
   const [room, setRoom] = useState<string | undefined>();
   const [showlobby, setShowLobby] = useState<boolean>(false);
+
+  useEffect(() => {
+    // const page_width = document.getElementById("background")?.clientWidth;
+    // const page_height = document.getElementById("background")?.clientHeight;
+    // console.log(page_width, page_height);
+
+    function onUserListChange(newUserList: Array<string>) {
+      setUserList(newUserList);
+    }
+    function onGameListChange(newGameList: Array<String>) {
+      console.log("newgamelist");
+      console.log(newGameList, "newgamelist");
+      setGameList(newGameList as Array<string>);
+    }
+    socket.on("newuser", onUserListChange);
+    socket.on("gamelist", onGameListChange);
+    socket.on("test", (stuff) => {
+      console.log(stuff);
+    });
+
+    return () => {
+      socket.removeListener("newuser");
+      socket.removeListener("gamelist");
+      socket.removeListener("test");
+    };
+  }, []);
 
   function handleMode(choice: ModeChoicesType) {
     console.log("choice", choice);
@@ -67,6 +94,7 @@ function App() {
           handleLobby={() => {
             setShowLobby(!showlobby);
           }}
+          mode={mode}
         />
       }
 
@@ -81,6 +109,7 @@ function App() {
           />
         )}
       </AnimatePresence>
+      <GameOver />
     </>
   );
 }

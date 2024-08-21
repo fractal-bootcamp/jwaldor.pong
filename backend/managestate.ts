@@ -47,7 +47,7 @@ export type BoxCoords = {
 };
 
 const STEP_SIZE = 5;
-export const SPEED = 5;
+export const SPEED = 50;
 
 export const PADDLE_WIDTH = 8;
 export const PADDLE_HEIGHT = 45;
@@ -70,9 +70,9 @@ export function getInitialState() {
       player2: 200,
       ball: {
         ycoord: 200,
-        xcoord: 350,
-        xvelocity: 5,
-        yvelocity: 5,
+        xcoord: 150,
+        xvelocity: 4,
+        yvelocity: 4,
       },
     },
     score: { player1: 0, player2: 0 },
@@ -217,11 +217,24 @@ type FullCoords = {
 
 function checkCollision(ballcoords: FullCoords, paddleCoords: FullCoords) {
   return (
-    ballcoords.lx < paddleCoords.rx &&
-    ballcoords.rx > paddleCoords.lx &&
+    ballcoords.rx < paddleCoords.rx + 10 &&
+    ballcoords.rx > paddleCoords.lx - 10 &&
     ballcoords.by < paddleCoords.ty &&
-    ballcoords.ty > paddleCoords.by
+    ballcoords.by > paddleCoords.by
   );
+  // return (
+  //   ((ballcoords.rx < paddleCoords.rx && ballcoords.rx > paddleCoords.lx) ||
+  //     true) &&
+  //   ballcoords.by < paddleCoords.ty &&
+  //   ballcoords.by > paddleCoords.by
+  // );
+
+  // return (
+  //   ballcoords.lx < paddleCoords.rx &&
+  //   ballcoords.rx > paddleCoords.lx &&
+  //   ballcoords.by < paddleCoords.ty &&
+  //   ballcoords.ty > paddleCoords.by
+  // );
 }
 
 function paddleCollision(
@@ -261,7 +274,7 @@ function paddleCollision(
   if (whichpaddle === "left") {
     gameState.coords.ball.xcoord = paddleCoords.rx + BALL_SIZE;
   } else if (whichpaddle === "right") {
-    gameState.coords.ball.xcoord = paddleCoords.lx - BALL_SIZE;
+    gameState.coords.ball.xcoord = paddleCoords.lx - 2 * BALL_SIZE;
   }
   console.log(gameState.coords.ball.xvelocity, gameState.coords.ball.yvelocity);
   return gameState;

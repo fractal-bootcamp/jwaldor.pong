@@ -21,23 +21,10 @@ export const MultiState = ({
       console.log("getting new state");
       setGameState(newState);
     }
-    function onUserListChange(newUserList: Array<string>) {
-      setUserList(newUserList);
-    }
-    function onGameListChange(newGameList: Array<String>) {
-      console.log("newgamelist");
-      console.log(newGameList, "newgamelist");
-      setGameList(newGameList as Array<string>);
-    }
     socket.on("newstate", changeGameState);
-    socket.on("newuser", onUserListChange);
-    socket.on("gamelist", onGameListChange);
-    socket.on("test", (stuff) => {
-      console.log(stuff);
-    });
 
     return () => {
-      socket.removeAllListeners();
+      socket.removeListener("newstate");
     };
   }, []);
 
