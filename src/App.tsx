@@ -33,13 +33,14 @@ function App() {
     socket.emit("joinroom", selected_room);
     setRoom(selected_room);
     handleMode("multiplayer");
+    setShowLobby(false);
   };
 
   useEffect(() => {
     if (params.roomName) {
       initializeGame(params.roomName);
     }
-  }, []);
+  }, [params.roomName]);
 
   useEffect(() => {
     // const page_width = document.getElementById("background")?.clientWidth;
