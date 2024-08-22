@@ -12,6 +12,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/room/:roomName",
+        element: <App />,
       },
     ],
   },
