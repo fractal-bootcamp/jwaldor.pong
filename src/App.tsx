@@ -8,7 +8,7 @@ import { Game, getInitialState } from "./game.ts";
 import { AnimatePresence } from "framer-motion";
 import { SingleState } from "./routes/StateHelpers/SingleState.tsx";
 import { MultiState } from "./routes/StateHelpers/MultiState.tsx";
-import { Route, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 // import GameOver from "./routes/GameOver.tsx";
 

@@ -1,9 +1,6 @@
 import { socket } from "./socket";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-
 // import nav from "@preline/tabs";
 
 function Lobby({
@@ -14,8 +11,6 @@ function Lobby({
   gameList: Array<string>;
 }) {
   const [selectedInput, setSelectedInput] = useState<string | undefined>();
-
-  const navigate = useNavigate();
 
   // useEffect(() => {
   //   document.addEventListener("click", function (e) {
