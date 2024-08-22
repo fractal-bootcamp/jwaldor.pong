@@ -43,6 +43,7 @@ function App() {
   }, [params.roomName]);
 
   useEffect(() => {
+    console.log("room", room, "avoiding error");
     // const page_width = document.getElementById("background")?.clientWidth;
     // const page_height = document.getElementById("background")?.clientHeight;
     // console.log(page_width, page_height);
