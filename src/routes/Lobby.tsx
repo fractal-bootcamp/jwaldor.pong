@@ -1,7 +1,8 @@
 import { socket } from "./socket";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 // import nav from "@preline/tabs";
 
@@ -15,6 +16,23 @@ function Lobby({
   const [selectedInput, setSelectedInput] = useState<string | undefined>();
 
   const navigate = useNavigate();
+
+  // useEffect(() => {
+  //   document.addEventListener("click", function (e) {
+  //     if (!document.getElementById("roomlist").contains(e.target)) {
+  //       setSelectedInput(undefined);
+  //     }
+  //   });
+  // }, []);
+
+  const handleCopy = async (content: string) => {
+    try {
+      await navigator.clipboard.writeText(content);
+      console.log("Copied to clipboard:", content);
+    } catch (error) {
+      console.error("Unable to copy to clipboard:", error);
+    }
+  };
 
   const saveRoom: React.FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
@@ -94,7 +112,7 @@ function Lobby({
         id="background"
         className="flex flex-col relative w-[448px] h-[581px] bg-sky-950 h-30"
       >
-        <div className="text-white">Save new room</div>
+        <div className="text-white">Create room</div>
         <form onSubmit={saveRoom}>
           <input name="username" type="text"></input>
           <button
@@ -105,43 +123,131 @@ function Lobby({
           </button>
         </form>
         <div className="text-white">Select room</div>
-        <div className="flex flex-row min-w-20 max-w-60">
-          <nav
-            className="flex flex-col space-y-2"
-            aria-label="Tabs"
-            role="tablist"
-            aria-orientation="horizontal"
-          >
-            {gameList.map((game) => (
-              <button
-                type="button"
-                className="hs-tab-active:border-blue-500 hs-tab-active:text-blue-600 bg-green-600 text-lg font-mono py-1 gap-x-2 border-e-2 border-transparent whitespace-nowra hover:text-blue-600 focus:outline-none focus:text-white disabled:opacity-50 disabled:pointer-events-none active mr-2 rounded-lg"
-                id="vertical-tab-with-border-item-1"
-                aria-selected="true"
-                data-hs-tab="#vertical-tab-with-border-1"
-                aria-controls="vertical-tab-with-border-1"
-                role="tab"
-                onClick={(e: any) => {
-                  setSelectedInput(game);
-                  console.log("roomselected", e.target.value);
-                }}
-                value={game}
-              >
-                {game}
-              </button>
-            ))}
-          </nav>
-          <button
-            className="text-white bg-blue-600 p-2 rounded-lg self-start mb-2 hover:text-green-600"
-            onClick={() => {
-              if (selectedInput) {
-                // navigate("/room/" + selectedInput);
-                initializeGame(selectedInput);
-              }
-            }}
-          >
-            Join game
-          </button>
+        <div id="roomlist">
+          <div className="flex flex-col min-w-20 max-w-60 gap-3">
+            {/* <nav
+              className="flex flex-col space-y-2"
+              aria-label="Tabs"
+              role="tablist"
+              aria-orientation="horizontal"
+            >
+              {gameList.map((game) => (
+                <button
+                  type="button"
+                  className="hs-tab-active:border-blue-500 hs-tab-active:text-blue-600 bg-green-600 text-lg font-mono py-1 gap-x-2 border-e-2 border-transparent whitespace-nowra hover:text-blue-600 focus:outline-none focus:text-white disabled:opacity-50 disabled:pointer-events-none active mr-2 rounded-lg"
+                  id={game}
+                  aria-selected="true"
+                  data-hs-tab="#vertical-tab-with-border-1"
+                  aria-controls="vertical-tab-with-border-1"
+                  role="tab"
+                  onClick={(e: any) => {
+                    setSelectedInput(game);
+                    console.log("roomselected", e.target.value);
+                  }}
+                  value={game}
+                >
+                  {game}
+                </button>
+              ))}
+            </nav> */}
+            <form>
+              {gameList.map((game) => (
+                <div className="radio">
+                  <label className="hs-tab-active:border-blue-500 hs-tab-active:text-blue-600 bg-green-600 text-lg font-mono py-1 gap-x-2 border-e-2 border-transparent whitespace-nowra hover:text-blue-600 focus:outline-none focus:text-white disabled:opacity-50 disabled:pointer-events-none active mr-2 rounded-lg">
+                    <input
+                      type="radio"
+                      value={game}
+                      checked={selectedInput === game}
+                      onChange={() => setSelectedInput(game)}
+                    />
+                    {game}
+                  </label>
+                </div>
+              ))}
+              {/* <div className="radio">
+                <label>
+                  <input
+                    className="hs-tab-active:border-blue-500 hs-tab-active:text-blue-600 bg-green-600 text-lg font-mono py-1 gap-x-2 border-e-2 border-transparent whitespace-nowra hover:text-blue-600 focus:outline-none focus:text-white disabled:opacity-50 disabled:pointer-events-none active mr-2 rounded-lg"
+                    type="radio"
+                    value={game}
+                  />
+                  {game}
+                </label>
+              </div>
+              <div className="radio">
+                <label>
+                  <input type="radio" value="option2" />
+                  Option 2
+                </label>
+              </div>
+              <div className="radio">
+                <label>
+                  <input type="radio" value="option3" />
+                  Option 3
+                </label>
+              </div> */}
+            </form>
+            <div className="flex flex-row mt-5">
+              {selectedInput && (
+                <span>
+                  <span className="text-white">1.</span>
+                  <button
+                    className="mx-1 text-white bg-blue-500 p-2 rounded-lg self-start mb-2 hover:text-green-600 text-sm"
+                    onClick={() => {
+                      if (selectedInput) {
+                        handleCopy(
+                          ((process.env.NODE_ENV as string) === "development"
+                            ? "http://localhost:5173"
+                            : "http://multipong.onrender.com") +
+                            "/room/" +
+                            selectedInput
+                        );
+                      }
+                    }}
+                  >
+                    Click here to copy join link for{" "}
+                    {((process.env.NODE_ENV as string) === "development"
+                      ? "http://localhost:5173"
+                      : "http://multipong.onrender.com") +
+                      "/room/" +
+                      selectedInput}{" "}
+                    and share it with your friend.
+                  </button>
+                </span>
+              )}
+
+              {selectedInput && (
+                <span>
+                  <span className="text-white">2.</span>
+
+                  <button
+                    className="mx-1 ext-white bg-blue-600 p-2 rounded-lg self-start mb-2 hover:text-green-600 mr-2 text-sm"
+                    onClick={() => {
+                      if (selectedInput) {
+                        // <a href={"localhost:5173/room/" + selectedInput}></a>;
+                        // navigate("/room/" + selectedInput);
+                        initializeGame(selectedInput);
+                      }
+                    }}
+                  >
+                    Click here to join game{" "}
+                    <span className="font-bold">{selectedInput}</span>
+                  </button>
+                </span>
+              )}
+              {selectedInput && (
+                <span>
+                  <span className="text-white">3.</span>
+
+                  <div className="mx-1 ext-white bg-blue-600 p-2 rounded-lg self-start mb-2 hover:text-green-600 mr-2 text-sm">
+                    The game will begin when your friend joins.
+                  </div>
+                </span>
+              )}
+            </div>
+
+            {/* <Link to={"/room/" + selectedInput}>About</Link> */}
+          </div>
         </div>
 
         {/* <form onSubmit={initializeGame}>
